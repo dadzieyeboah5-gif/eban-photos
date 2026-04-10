@@ -1,0 +1,48 @@
+# ═══════════════════════════════════════════════════════════════
+# Render.com Deployment Configuration
+# ═══════════════════════════════════════════════════════════════
+# Place this file in your repo root for easy deployment
+
+services:
+  - type: web
+    name: eban-photos-backend
+    runtime: node
+    region: frankfurt  # Change to your preferred region
+    plan: free  # Or 'starter' for always-on
+    
+    # Build settings
+    buildCommand: npm install
+    startCommand: npm start
+    
+    # Health check
+    healthCheckPath: /health
+    
+    # Environment variables (set in Render dashboard)
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: FRONTEND_URL
+        sync: false  # Set in dashboard
+      - key: PAYSTACK_PUBLIC_KEY
+        sync: false
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true  # Auto-generate secure value
+      - key: SIGNED_URL_SECRET
+        generateValue: true
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: BOOKING_EMAIL
+        sync: false
+    
+    # Auto-deploy on push
+    autoDeploy: true

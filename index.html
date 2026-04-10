@@ -1,0 +1,2378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>eban photos — Where Light Becomes Legacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<!-- SECURITY: nonce attribute on stylesheet link (style-src nonce) -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet" nonce="REPLACE_WITH_SERVER_NONCE">
+
+<script src="https://js.paystack.co/v1/inline.js" nonce="REPLACE_WITH_SERVER_NONCE"></script>
+
+<style nonce="REPLACE_WITH_SERVER_NONCE">
+/* ─── DESIGN TOKENS ─────────────────────────────────────────── */
+:root {
+  --ink:          #0d0f06;
+  --forest:       #1a1e0a;
+  --moss:         #242910;
+  --army:         #3a4015;
+  --sage:         #4f561e;
+  --fern:         #626b28;
+  --gold:         #e8d96a;
+  --gold-pale:    #f2ecaa;
+  --gold-dim:     rgba(232,217,106,0.12);
+  --gold-glow:    rgba(232,217,106,0.35);
+  --cream:        #f4f0e4;
+  --cream-dim:    rgba(244,240,228,0.55);
+  --white:        #fdfcf7;
+  --ease-silk:    cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-expo:    cubic-bezier(0.16, 1, 0.3, 1);
+  --r:            0px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+body {
+  background: var(--forest);
+  color: var(--cream);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ─── GRAIN OVERLAY ─────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9997;
+  opacity: 0.028;
+}
+
+
+/* ─── TYPOGRAPHY ────────────────────────────────────────────── */
+.serif { font-family: 'Playfair Display', serif; }
+.sans  { font-family: 'Outfit', sans-serif; }
+
+/* ─── NAV ────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.8rem 5rem;
+  transition: padding 0.4s var(--ease-silk), background 0.4s ease, transform 0.4s ease;
+}
+nav.scrolled {
+  background: rgba(13,15,6,0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  padding: 1.2rem 5rem;
+  border-bottom: 1px solid rgba(232,217,106,0.08);
+}
+nav.hide { transform: translateY(-100%); }
+
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400; font-style: italic;
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  text-decoration: none;
+  transition: letter-spacing 0.4s var(--ease-silk);
+}
+.nav-logo:hover { letter-spacing: 0.14em; }
+
+.nav-links { display: flex; gap: 2.8rem; list-style: none; align-items: center; }
+.nav-links a {
+  font-size: 0.68rem; letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--cream); text-decoration: none; opacity: 0.55;
+  transition: opacity 0.3s ease, color 0.3s ease;
+  position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -3px; left: 0;
+  width: 0; height: 1px; background: var(--gold);
+  transition: width 0.4s var(--ease-silk);
+}
+.nav-links a:hover { opacity: 1; color: var(--gold); }
+.nav-links a:hover::after { width: 100%; }
+.nav-book-link {
+  border: 1px solid rgba(232,217,106,0.5) !important;
+  padding: 0.45rem 1.2rem !important;
+  opacity: 1 !important;
+  color: var(--gold) !important;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+.nav-book-link:hover { background: var(--gold) !important; color: var(--forest) !important; box-shadow: 0 0 20px var(--gold-glow) !important; }
+.nav-book-link::after { display: none !important; }
+
+/* ─── HAMBURGER ─────────────────────────────────────────────── */
+.nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+.nav-toggle span { display: block; width: 22px; height: 1px; background: var(--gold); transition: transform 0.3s ease, opacity 0.3s ease; }
+.nav-toggle.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.nav-mobile-menu {
+  display: none; position: fixed; inset: 0; z-index: 850;
+  background: rgba(13,15,6,0.97); backdrop-filter: blur(20px);
+  flex-direction: column; align-items: center; justify-content: center; gap: 2.4rem;
+  opacity: 0; transition: opacity 0.35s ease;
+}
+.nav-mobile-menu.open { display: flex; opacity: 1; }
+.nav-mobile-menu a {
+  font-family: 'Playfair Display', serif; font-size: 2.4rem; color: var(--cream);
+  text-decoration: none; letter-spacing: 0.06em; opacity: 0.7;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+.nav-mobile-menu a:hover { color: var(--gold); opacity: 1; }
+
+/* ─── HERO ───────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  height: 100vh; min-height: 720px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: url("images/dad.jpg") center 15% / cover no-repeat;
+  filter: brightness(0.3);
+}
+@keyframes slowZoom {
+  from { transform: scale(1); }
+  to   { transform: scale(1.08); }
+}
+.hero-vignette {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 90% at 50% 50%, transparent 20%, rgba(13,15,6,0.7) 100%),
+    linear-gradient(to top, rgba(13,15,6,0.9) 0%, transparent 40%),
+    linear-gradient(160deg, rgba(26,30,10,0.5) 0%, transparent 55%);
+}
+.hero-content {
+  position: relative; z-index: 2; text-align: center;
+  padding: 0 2rem;
+}
+.hero-eyebrow {
+  font-size: 0.62rem; letter-spacing: 0.55em; text-transform: uppercase;
+  color: var(--gold); opacity: 0;
+  animation: riseIn 1s var(--ease-expo) 0.5s forwards;
+  margin-bottom: 1.8rem; display: block;
+}
+.hero-brand {
+  font-family: 'Playfair Display', serif; font-weight: 400;
+  font-size: clamp(5rem, 13vw, 11rem); line-height: 0.85;
+  letter-spacing: -0.01em; color: var(--white);
+  opacity: 0; animation: expansionReveal 1.8s var(--ease-expo) 0.7s forwards;
+  margin-bottom: 1.2rem;
+}
+.hero-brand em { font-style: italic; color: var(--gold); }
+.hero-tagline {
+  font-size: 0.78rem; letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--cream-dim); opacity: 0;
+  animation: riseIn 1s var(--ease-expo) 1.3s forwards;
+  margin-bottom: 3.5rem; display: block;
+}
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 0.9rem;
+  padding: 1.05rem 3.2rem; background: transparent;
+  border: 1px solid var(--gold); color: var(--gold);
+  font-size: 0.67rem; letter-spacing: 0.4em; text-transform: uppercase;
+  text-decoration: none; opacity: 0;
+  transition: background 0.45s var(--ease-silk), color 0.45s var(--ease-silk), box-shadow 0.45s ease, transform 0.3s var(--ease-spring);
+  animation: riseIn 1s var(--ease-expo) 1.6s forwards;
+  position: relative; overflow: hidden;
+}
+.hero-cta::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--gold); transform: translateX(-101%);
+  transition: transform 0.45s var(--ease-silk);
+  z-index: -1;
+}
+.hero-cta:hover { color: var(--forest); box-shadow: 0 0 50px var(--gold-glow); transform: translateY(-2px); }
+.hero-cta:hover::before { transform: translateX(0); }
+
+.hero-scroll-hint {
+  position: absolute; bottom: 2.8rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+  opacity: 0; animation: riseIn 1s var(--ease-expo) 2.2s forwards;
+}
+.hero-scroll-hint span { font-size: 0.55rem; letter-spacing: 0.45em; text-transform: uppercase; color: var(--gold); opacity: 0.5; }
+.scroll-thread {
+  width: 1px; height: 56px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  animation: threadPulse 2.2s ease-in-out infinite;
+}
+@keyframes threadPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50%       { opacity: 0.9; transform: scaleY(1.12); }
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes expansionReveal {
+  from { opacity: 0; letter-spacing: 0.14em; transform: translateY(40px); }
+  to   { opacity: 1; letter-spacing: -0.01em; transform: translateY(0); }
+}
+
+/* ─── SECTION BASE ──────────────────────────────────────────── */
+section { padding: 9rem 5rem; }
+
+.section-tag {
+  display: inline-flex; align-items: center; gap: 1rem;
+  font-size: 0.58rem; letter-spacing: 0.55em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 3.2rem;
+}
+.section-tag::before {
+  content: ''; width: 30px; height: 1px; background: var(--gold); opacity: 0.5;
+}
+
+.section-heading {
+  font-family: 'Playfair Display', serif; font-weight: 400;
+  font-size: clamp(2.6rem, 5.5vw, 5rem); line-height: 1.0;
+  color: var(--white); letter-spacing: -0.01em;
+}
+.section-heading em { font-style: italic; color: var(--gold); }
+
+/* ─── REVEAL ANIMATIONS ─────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(44px); transition: opacity 0.95s var(--ease-expo), transform 0.95s var(--ease-expo); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.22s; }
+.reveal-d3 { transition-delay: 0.34s; }
+.reveal-d4 { transition-delay: 0.46s; }
+
+/* ─── GALLERY ────────────────────────────────────────────────── */
+.gallery-section { background: var(--forest); padding-top: 7rem; padding-bottom: 9rem; }
+
+.gallery-head {
+  max-width: 1360px; margin: 0 auto 5rem;
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: end; gap: 3rem;
+}
+.gallery-head-desc {
+  max-width: 320px; font-size: 0.82rem; line-height: 1.95;
+  opacity: 0.45; letter-spacing: 0.01em; text-align: right;
+}
+
+.albums-grid {
+  max-width: 1360px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  gap: 1.4rem;
+}
+
+.album-card {
+  position: relative; overflow: hidden; cursor: pointer;
+  background: var(--army);
+  transition: transform 0.6s var(--ease-silk), box-shadow 0.6s ease;
+}
+.album-card:hover { transform: translateY(-5px); box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+
+.album-img-wrap { position: relative; overflow: hidden; }
+.album-cover {
+  width: 100%; display: block; aspect-ratio: 3/4; object-fit: cover;
+  filter: saturate(0.45) brightness(0.78);
+  transition: filter 0.8s var(--ease-silk), transform 0.8s var(--ease-silk);
+}
+.album-card:hover .album-cover { filter: saturate(1.05) brightness(0.95); transform: scale(1.05); }
+
+.album-layer {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(13,15,6,0.95) 0%, rgba(13,15,6,0.1) 55%, transparent 100%);
+  transition: opacity 0.5s ease;
+}
+.album-info {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 1.8rem 1.6rem;
+}
+.album-title {
+  font-family: 'Playfair Display', serif; font-weight: 400;
+  font-size: 1.6rem; color: var(--white); line-height: 1.1;
+  margin-bottom: 0.35rem;
+  transform: translateY(6px);
+  transition: transform 0.5s var(--ease-silk);
+}
+.album-card:hover .album-title { transform: translateY(0); }
+.album-sub { font-size: 0.58rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); opacity: 0.7; }
+
+.album-badge {
+  position: absolute; top: 1.1rem; right: 1.1rem;
+  background: rgba(13,15,6,0.75); backdrop-filter: blur(8px);
+  padding: 0.28rem 0.7rem;
+  font-size: 0.55rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
+}
+.album-view-btn {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(232,217,106,0.12); border: 1px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.45s var(--ease-spring), background 0.3s ease;
+}
+.album-view-btn svg { width: 22px; height: 22px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
+.album-card:hover .album-view-btn { transform: translate(-50%, -50%) scale(1); }
+
+/* ── PREMIUM CARD ──────────────────────────────────────────── */
+.premium-card {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  cursor: default;
+}
+.premium-card:hover { transform: none; box-shadow: none; }
+.premium-card .album-img-wrap { cursor: pointer; }
+.premium-card .album-cover { aspect-ratio: unset; height: 100%; min-height: 380px; }
+
+.premium-panel {
+  background: linear-gradient(145deg, rgba(26,30,10,0.99) 0%, rgba(58,64,21,0.92) 100%);
+  padding: 3.8rem;
+  display: flex; flex-direction: column; justify-content: center;
+  border-top: 1px solid rgba(232,217,106,0.1);
+  border-right: 1px solid rgba(232,217,106,0.1);
+  border-bottom: 1px solid rgba(232,217,106,0.1);
+}
+.premium-badge-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(232,217,106,0.1); border: 1px solid rgba(232,217,106,0.35);
+  padding: 0.32rem 0.85rem; margin-bottom: 1.6rem;
+  font-size: 0.56rem; letter-spacing: 0.38em; text-transform: uppercase; color: var(--gold);
+  width: fit-content;
+}
+.premium-badge-tag svg { width: 10px; height: 10px; stroke: var(--gold); fill: none; stroke-width: 2; }
+
+.premium-title {
+  font-family: 'Playfair Display', serif; font-weight: 400;
+  font-size: 2.6rem; line-height: 1.05; color: var(--white);
+  margin-bottom: 0.5rem;
+}
+.premium-title em { font-style: italic; color: var(--gold); }
+.premium-sub { font-size: 0.58rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); opacity: 0.6; margin-bottom: 1.4rem; }
+.premium-desc { font-size: 0.83rem; line-height: 1.9; opacity: 0.5; margin-bottom: 2.2rem; max-width: 360px; }
+
+.premium-price-block { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 2.2rem; }
+.premium-price {
+  font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 400; color: var(--gold);
+}
+.premium-price-note { font-size: 0.63rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.45; }
+
+.unlock-btn {
+  display: inline-flex; align-items: center; gap: 0.8rem;
+  padding: 1.05rem 2.6rem; background: var(--gold); color: var(--forest);
+  border: none; cursor: pointer;
+  font-family: 'Outfit', sans-serif; font-size: 0.67rem; font-weight: 500;
+  letter-spacing: 0.35em; text-transform: uppercase; width: fit-content;
+  transition: box-shadow 0.4s ease, transform 0.3s var(--ease-spring), background 0.3s ease;
+  position: relative; overflow: hidden;
+}
+.unlock-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--gold-pale); transform: translateX(-101%);
+  transition: transform 0.4s var(--ease-silk); z-index: 0;
+}
+.unlock-btn:hover { box-shadow: 0 0 55px var(--gold-glow); transform: translateY(-2px); }
+.unlock-btn:hover::before { transform: translateX(0); }
+.unlock-btn span, .unlock-btn svg { position: relative; z-index: 1; }
+.unlock-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+.premium-perks { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.55rem; }
+.perk {
+  display: flex; align-items: center; gap: 0.7rem;
+  font-size: 0.7rem; opacity: 0.45; letter-spacing: 0.04em;
+}
+.perk svg { width: 12px; height: 12px; stroke: var(--gold); fill: none; stroke-width: 2; opacity: 0.8; flex-shrink: 0; }
+
+.premium-blurred-previews { display: flex; gap: 0.55rem; margin-top: 2rem; }
+.blurred-thumb {
+  width: 52px; height: 52px; object-fit: cover;
+  filter: blur(7px) brightness(0.45); border: 1px solid rgba(232,217,106,0.12);
+  flex-shrink: 0;
+}
+.blurred-more {
+  width: 52px; height: 52px;
+  background: rgba(232,217,106,0.07); border: 1px solid rgba(232,217,106,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; color: var(--gold); opacity: 0.6; flex-shrink: 0;
+}
+
+/* Lock overlay */
+.premium-lock-veil {
+  position: absolute; inset: 0;
+  background: rgba(13,15,6,0.45);
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; transition: backdrop-filter 0.5s ease, background 0.5s ease;
+}
+.lock-ring {
+  width: 68px; height: 68px; border-radius: 50%;
+  background: rgba(232,217,106,0.1); border: 1px solid rgba(232,217,106,0.4);
+  display: flex; align-items: center; justify-content: center;
+}
+.lock-ring svg { width: 26px; height: 26px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
+
+/* ─── LIGHTBOX ───────────────────────────────────────────────── */
+.lightbox {
+  position: fixed; inset: 0; z-index: 9100;
+  background: rgba(8,10,3,0.97);
+  display: none; flex-direction: column;
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.lightbox.open { display: flex; }
+.lightbox.visible { opacity: 1; }
+
+.lb-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.5rem 2.8rem;
+  border-bottom: 1px solid rgba(232,217,106,0.08);
+  flex-shrink: 0;
+}
+.lb-name {
+  font-family: 'Playfair Display', serif; font-style: italic;
+  font-size: 1.25rem; color: var(--gold); letter-spacing: 0.04em;
+}
+.lb-actions { display: flex; gap: 1rem; align-items: center; }
+.lb-btn {
+  background: none; border: 1px solid rgba(232,217,106,0.25);
+  color: var(--cream); cursor: pointer; padding: 0.5rem 1.2rem;
+  font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+  transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
+  font-family: 'Outfit', sans-serif;
+}
+.lb-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(232,217,106,0.05); }
+
+.lb-body { flex: 1; display: grid; grid-template-columns: 1fr 300px; overflow: hidden; min-height: 0; }
+
+.lb-stage {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  padding: 2.5rem; overflow: hidden; background: #0a0c05;
+}
+.lb-image {
+  max-width: 100%; max-height: 100%; object-fit: contain; display: block;
+  transition: opacity 0.32s ease, transform 0.32s var(--ease-silk);
+  border: 1px solid rgba(232,217,106,0.04);
+}
+.lb-image.fade { opacity: 0; transform: scale(0.97); }
+
+.lb-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 46px; height: 46px;
+  background: rgba(232,217,106,0.07); border: 1px solid rgba(232,217,106,0.2);
+  color: var(--gold); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s var(--ease-spring);
+  font-size: 1rem;
+}
+.lb-arrow:hover { background: rgba(232,217,106,0.15); border-color: var(--gold); }
+.lb-arrow.lb-prev:hover { transform: translateY(-50%) translateX(-2px); }
+.lb-arrow.lb-next:hover { transform: translateY(-50%) translateX(2px); }
+.lb-prev { left: 1.2rem; }
+.lb-next { right: 1.2rem; }
+
+.lb-count {
+  position: absolute; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
+  font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); opacity: 0.5;
+}
+.lb-dl-btn {
+  position: absolute; bottom: 1.4rem; right: 1.6rem;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.48rem 1.1rem;
+  background: rgba(232,217,106,0.08); border: 1px solid rgba(232,217,106,0.3);
+  color: var(--gold); cursor: pointer; text-decoration: none;
+  font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'Outfit', sans-serif;
+}
+.lb-dl-btn:hover { background: var(--gold); color: var(--forest); box-shadow: 0 0 22px var(--gold-glow); border-color: var(--gold); }
+.lb-dl-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+.lb-strip {
+  border-left: 1px solid rgba(232,217,106,0.07);
+  overflow-y: auto; padding: 1.5rem 0.9rem;
+  display: flex; flex-direction: column; gap: 0.45rem;
+  scrollbar-width: thin; scrollbar-color: rgba(232,217,106,0.15) transparent;
+}
+.lb-strip::-webkit-scrollbar { width: 3px; }
+.lb-strip::-webkit-scrollbar-thumb { background: rgba(232,217,106,0.15); }
+.strip-label {
+  font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold); opacity: 0.4; margin-bottom: 0.5rem; padding: 0 0.2rem; flex-shrink: 0;
+}
+.strip-thumb {
+  position: relative; cursor: pointer; overflow: hidden; flex-shrink: 0;
+  border: 1px solid rgba(232,217,106,0.06);
+  transition: border-color 0.3s ease;
+}
+.strip-thumb:hover { border-color: rgba(232,217,106,0.3); }
+.strip-thumb.active { border-color: var(--gold); box-shadow: 0 0 12px var(--gold-dim); }
+.strip-thumb img {
+  width: 100%; height: 96px; object-fit: cover; display: block;
+  filter: saturate(0.4) brightness(0.75);
+  transition: filter 0.4s ease;
+}
+.strip-thumb:hover img, .strip-thumb.active img { filter: saturate(1) brightness(1); }
+.strip-thumb-footer {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(13,15,6,0.82); padding: 0.28rem 0.5rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.strip-thumb-footer span {
+  font-size: 0.52rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--cream); opacity: 0.55;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;
+}
+.strip-dl {
+  background: none; border: none; cursor: pointer; color: var(--gold);
+  opacity: 0.45; display: flex; align-items: center; flex-shrink: 0;
+  transition: opacity 0.2s ease;
+}
+.strip-dl:hover { opacity: 1; }
+.strip-dl svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+.lb-foot {
+  flex-shrink: 0; border-top: 1px solid rgba(232,217,106,0.08);
+  padding: 1rem 2.8rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(26,30,10,0.5);
+}
+.lb-foot-text { font-size: 0.62rem; opacity: 0.35; letter-spacing: 0.08em; }
+.lb-dl-all {
+  display: inline-flex; align-items: center; gap: 0.7rem;
+  padding: 0.65rem 1.8rem;
+  background: transparent; border: 1px solid var(--gold); color: var(--gold); cursor: pointer;
+  font-family: 'Outfit', sans-serif; font-size: 0.62rem; letter-spacing: 0.28em; text-transform: uppercase;
+  transition: background 0.4s var(--ease-silk), color 0.4s ease, box-shadow 0.3s ease;
+}
+.lb-dl-all:hover { background: var(--gold); color: var(--forest); box-shadow: 0 0 30px var(--gold-glow); }
+.lb-dl-all svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* ─── PAYMENT MODAL ─────────────────────────────────────────── */
+.modal-veil {
+  position: fixed; inset: 0; z-index: 9500;
+  background: rgba(5,7,2,0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  display: none; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.modal-veil.open { display: flex; }
+.modal-veil.visible { opacity: 1; }
+
+.modal-box {
+  background: var(--moss); border: 1px solid rgba(232,217,106,0.18);
+  width: 92%; max-width: 520px; padding: 3.2rem;
+  position: relative; transform: translateY(24px);
+  transition: transform 0.4s var(--ease-expo);
+  max-height: 92vh; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: rgba(232,217,106,0.15) transparent;
+}
+.modal-box::-webkit-scrollbar { width: 3px; }
+.modal-box::-webkit-scrollbar-thumb { background: rgba(232,217,106,0.15); }
+.modal-veil.visible .modal-box { transform: translateY(0); }
+
+.modal-close {
+  position: absolute; top: 1.3rem; right: 1.5rem;
+  background: none; border: none; color: var(--cream);
+  cursor: pointer; font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+  opacity: 0.45; transition: opacity 0.2s ease; font-family: 'Outfit', sans-serif;
+}
+.modal-close:hover { opacity: 1; }
+
+.modal-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(232,217,106,0.09); border: 1px solid rgba(232,217,106,0.28);
+  padding: 0.3rem 0.8rem; margin-bottom: 1.5rem;
+  font-size: 0.56rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+}
+.modal-badge svg { width: 10px; height: 10px; stroke: var(--gold); fill: none; stroke-width: 2; }
+
+.modal-title {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
+  font-size: 2rem; color: var(--white); margin-bottom: 0.5rem; line-height: 1.1;
+}
+.modal-sub { font-size: 0.78rem; opacity: 0.42; line-height: 1.75; margin-bottom: 2rem; }
+
+.modal-price-row {
+  background: rgba(232,217,106,0.05); border: 1px solid rgba(232,217,106,0.12);
+  padding: 1.1rem 1.4rem; margin-bottom: 2rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-price-label { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.45; }
+.modal-price-val {
+  font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold);
+}
+
+/* ─── PAYMENT METHOD SELECTOR ───────────────────────────────── */
+.payment-method-label {
+  font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold); opacity: 0.65; display: block; margin-bottom: 0.7rem;
+}
+.payment-methods {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.75rem; margin-bottom: 1.6rem;
+}
+.pm-option {
+  position: relative; cursor: pointer;
+}
+.pm-option input[type="radio"] {
+  position: absolute; opacity: 0; width: 0; height: 0;
+}
+.pm-card {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.6rem; padding: 1.2rem 0.8rem;
+  border: 1px solid rgba(232,217,106,0.18);
+  background: rgba(13,15,6,0.4);
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.pm-card:hover {
+  border-color: rgba(232,217,106,0.45);
+  background: rgba(232,217,106,0.04);
+}
+.pm-option input:checked + .pm-card {
+  border-color: var(--gold);
+  background: rgba(232,217,106,0.08);
+  box-shadow: 0 0 18px var(--gold-dim);
+}
+.pm-icon {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+}
+.pm-icon svg { width: 28px; height: 28px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
+.pm-icon.momo svg { stroke: var(--gold); }
+.pm-icon.visa svg { stroke: var(--gold); }
+
+.pm-name {
+  font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--cream); opacity: 0.7; text-align: center;
+}
+.pm-desc {
+  font-size: 0.54rem; letter-spacing: 0.05em;
+  color: var(--cream); opacity: 0.35; text-align: center;
+}
+.pm-check {
+  position: absolute; top: 0.5rem; right: 0.6rem;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--gold); display: none;
+  align-items: center; justify-content: center;
+}
+.pm-check svg { width: 9px; height: 9px; stroke: var(--forest); fill: none; stroke-width: 2.5; }
+.pm-option input:checked ~ .pm-card .pm-check { display: flex; }
+.pm-card { position: relative; }
+
+.form-field { margin-bottom: 1.3rem; position: relative; }
+.form-field label {
+  display: block; font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold); opacity: 0.65; margin-bottom: 0.45rem;
+}
+.form-field input {
+  width: 100%; background: rgba(13,15,6,0.55); border: 1px solid rgba(232,217,106,0.15);
+  color: var(--white); font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 300;
+  padding: 0.9rem 1.1rem; outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.form-field input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+.form-field input::placeholder { opacity: 0.28; }
+.field-error { display: none; font-size: 0.58rem; color: #e07070; margin-top: 0.3rem; letter-spacing: 0.05em; }
+.form-field.error input { border-color: #e07070; }
+.form-field.error .field-error { display: block; }
+
+.pay-btn {
+  width: 100%; padding: 1.1rem; background: var(--gold); color: var(--forest);
+  border: none; cursor: pointer;
+  font-family: 'Outfit', sans-serif; font-size: 0.68rem; font-weight: 500;
+  letter-spacing: 0.35em; text-transform: uppercase;
+  transition: box-shadow 0.4s ease, transform 0.3s var(--ease-spring), background 0.3s ease;
+  margin-top: 0.5rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+}
+.pay-btn:hover { box-shadow: 0 0 45px var(--gold-glow); transform: translateY(-1px); background: var(--gold-pale); }
+.pay-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+.pay-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+.modal-secure {
+  display: flex; align-items: center; gap: 0.5rem; margin-top: 1.2rem;
+  font-size: 0.56rem; opacity: 0.3; letter-spacing: 0.1em; justify-content: center;
+}
+.modal-secure svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* Payment success */
+.pay-success { text-align: center; padding: 0.5rem 0; }
+.pay-success-ring {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(232,217,106,0.1); border: 1px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+.pay-success-ring svg { width: 26px; height: 26px; stroke: var(--gold); fill: none; stroke-width: 2; }
+.pay-success h3 {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-size: 1.9rem;
+  color: var(--white); margin-bottom: 0.7rem; line-height: 1.1;
+}
+.pay-success p { font-size: 0.78rem; opacity: 0.5; line-height: 1.75; }
+
+/* ─── ABOUT ──────────────────────────────────────────────────── */
+.about-section {
+  background: var(--moss); position: relative; overflow: hidden;
+}
+.about-section::after {
+  content: 'EP'; position: absolute; right: -4%; bottom: -10%;
+  font-family: 'Playfair Display', serif; font-size: 28vw; font-weight: 700;
+  color: rgba(232,217,106,0.03); line-height: 1; pointer-events: none;
+  letter-spacing: -0.05em;
+}
+.about-inner {
+  max-width: 1360px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8rem; align-items: center;
+}
+.about-img-frame { position: relative; }
+.about-img-frame img {
+  width: 100%; display: block;
+  filter: brightness(0.72) saturate(0.65);
+  transition: filter 0.7s var(--ease-silk);
+}
+.about-img-frame:hover img { filter: brightness(0.88) saturate(1.05); }
+.about-img-frame::after {
+  content: ''; position: absolute; top: 2rem; right: -2rem; bottom: -2rem; left: 2rem;
+  border: 1px solid rgba(232,217,106,0.2); pointer-events: none;
+  transition: border-color 0.5s ease;
+}
+.about-img-frame:hover::after { border-color: rgba(232,217,106,0.55); }
+
+.about-text h2 { margin-bottom: 1.8rem; }
+.about-text p { font-size: 0.9rem; line-height: 2.05; opacity: 0.6; margin-bottom: 1.4rem; }
+.about-quote {
+  font-family: 'Playfair Display', serif; font-style: italic;
+  font-size: 1.35rem; line-height: 1.55; color: var(--gold);
+  border-left: 2px solid var(--gold); padding-left: 1.5rem;
+  margin: 2.4rem 0; opacity: 0.88;
+}
+
+/* ─── SERVICES ───────────────────────────────────────────────── */
+.services-section { background: var(--forest); }
+.services-inner { max-width: 1360px; margin: 0 auto; }
+.services-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  border: 1px solid rgba(232,217,106,0.1);
+  margin-top: 4.5rem;
+}
+.service-card {
+  padding: 3.5rem 2.8rem;
+  border-right: 1px solid rgba(232,217,106,0.1);
+  position: relative; overflow: hidden;
+  transition: background 0.5s var(--ease-silk);
+}
+.service-card:last-child { border-right: none; }
+.service-card::before {
+  content: ''; position: absolute; bottom: 0; left: 0;
+  width: 100%; height: 2px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.55s var(--ease-silk);
+}
+.service-card:hover { background: rgba(232,217,106,0.035); }
+.service-card:hover::before { transform: scaleX(1); }
+.service-num {
+  font-family: 'Playfair Display', serif; font-size: 0.82rem;
+  color: var(--gold); opacity: 0.5; letter-spacing: 0.22em; display: block; margin-bottom: 2rem;
+}
+.service-card h3 {
+  font-family: 'Playfair Display', serif; font-weight: 400;
+  font-size: 2rem; line-height: 1.1; margin-bottom: 1.2rem; color: var(--white);
+  transition: color 0.35s ease;
+}
+.service-card:hover h3 { color: var(--gold); }
+.service-card p { font-size: 0.8rem; line-height: 1.95; opacity: 0.5; }
+
+/* ─── BOOKING ────────────────────────────────────────────────── */
+.booking-section { background: var(--army); }
+.booking-inner { max-width: 760px; margin: 0 auto; }
+.booking-inner h2 { margin-bottom: 0.8rem; }
+.booking-inner > p.sub { font-size: 0.82rem; line-height: 1.9; opacity: 0.5; margin-bottom: 4rem; }
+
+.book-form { display: flex; flex-direction: column; gap: 0; }
+.book-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; margin-bottom: 1.6rem; }
+.book-field { position: relative; margin-bottom: 1.6rem; }
+.book-field.half { margin-bottom: 0; }
+.book-field input, .book-field select, .book-field textarea {
+  width: 100%; background: rgba(13,15,6,0.45); border: 1px solid rgba(232,217,106,0.15);
+  color: var(--white); font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 300;
+  padding: 1.45rem 1.2rem 0.65rem; outline: none; -webkit-appearance: none;
+  transition: border-color 0.4s var(--ease-silk), box-shadow 0.4s var(--ease-silk), background 0.4s ease;
+}
+.book-field select { padding-top: 1.45rem; }
+.book-field select option { background: var(--army); color: var(--white); }
+.book-field textarea { resize: none; min-height: 130px; }
+.book-field input:focus, .book-field select:focus, .book-field textarea:focus {
+  border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim);
+  background: rgba(13,15,6,0.65);
+}
+.book-field label {
+  position: absolute; top: 1.05rem; left: 1.2rem;
+  font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--cream); opacity: 0.38; pointer-events: none;
+  transition: top 0.3s var(--ease-silk), font-size 0.3s ease, opacity 0.3s ease, color 0.3s ease;
+}
+.book-field input:focus ~ label, .book-field input:not(:placeholder-shown) ~ label,
+.book-field select:focus ~ label, .book-field textarea:focus ~ label,
+.book-field textarea:not(:placeholder-shown) ~ label {
+  top: 0.38rem; font-size: 0.56rem; opacity: 1; color: var(--gold);
+}
+.book-field.error input, .book-field.error select, .book-field.error textarea { border-color: #e07070; }
+.book-field .book-error { display: none; font-size: 0.58rem; color: #e07070; margin-top: 0.3rem; }
+.book-field.error .book-error { display: block; }
+
+/* ── PHONE FIELD WITH COUNTRY CODE ────────────────────────── */
+.phone-wrap {
+  position: relative; display: flex; align-items: stretch;
+}
+.country-code-select {
+  flex-shrink: 0;
+  background: rgba(13,15,6,0.65) !important;
+  border: 1px solid rgba(232,217,106,0.15) !important;
+  border-right: none !important;
+  color: var(--gold) !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 0.78rem !important;
+  font-weight: 400 !important;
+  padding: 0 0.8rem 0 0.7rem !important;
+  cursor: pointer;
+  width: auto;
+  min-width: 90px;
+  max-width: 120px;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.5rem center !important;
+  padding-right: 1.6rem !important;
+  outline: none !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+  letter-spacing: 0.02em !important;
+  padding-top: 1.45rem !important;
+  padding-bottom: 0.65rem !important;
+}
+.country-code-select option { background: var(--army); color: var(--white); font-size: 0.82rem; }
+.country-code-select:focus {
+  border-color: var(--gold) !important;
+  box-shadow: -3px 0 0 3px var(--gold-dim), 0 3px 0 3px var(--gold-dim), 0 -3px 0 3px var(--gold-dim) !important;
+}
+.phone-wrap input {
+  flex: 1;
+  border-left: none !important;
+  padding-left: 1rem !important;
+}
+.phone-wrap:focus-within .country-code-select,
+.phone-wrap:focus-within input {
+  border-color: var(--gold) !important;
+}
+.phone-wrap:focus-within .country-code-select {
+  box-shadow: none !important;
+}
+.phone-wrap:focus-within input {
+  box-shadow: none !important;
+}
+.phone-wrap:focus-within {
+  box-shadow: 0 0 0 3px var(--gold-dim);
+}
+.phone-field-label {
+  position: absolute; top: 1.05rem; left: 0;
+  left: 1.2rem;
+  font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--cream); opacity: 0.38; pointer-events: none;
+  transition: top 0.3s var(--ease-silk), font-size 0.3s ease, opacity 0.3s ease, color 0.3s ease;
+  z-index: 1;
+}
+.phone-wrap ~ .phone-field-label { left: calc(90px + 0.8rem); }
+.phone-wrap input:focus ~ .phone-field-label,
+.phone-wrap input:not(:placeholder-shown) ~ .phone-field-label {
+  top: 0.38rem; font-size: 0.56rem; opacity: 1; color: var(--gold);
+}
+
+.btn-submit {
+  width: 100%; padding: 1.3rem 2rem; background: transparent;
+  border: 1px solid var(--gold); color: var(--gold);
+  font-family: 'Outfit', sans-serif; font-size: 0.68rem; letter-spacing: 0.42em; text-transform: uppercase;
+  cursor: pointer; margin-top: 1rem; position: relative; overflow: hidden;
+  transition: color 0.45s var(--ease-silk), box-shadow 0.4s ease, transform 0.3s var(--ease-spring);
+}
+.btn-submit::before {
+  content: ''; position: absolute; inset: 0; background: var(--gold);
+  transform: translateY(101%); transition: transform 0.45s var(--ease-silk); z-index: 0;
+}
+.btn-submit span { position: relative; z-index: 1; }
+.btn-submit:hover { color: var(--forest); box-shadow: 0 0 50px var(--gold-glow); transform: translateY(-2px); }
+.btn-submit:hover::before { transform: translateY(0); }
+.btn-submit:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* SECURITY: Honeypot field — hidden from users, visible to bots */
+.hp-field { opacity: 0; position: absolute; top: -9999px; left: -9999px; height: 0; }
+
+/* ─── SOCIAL ─────────────────────────────────────────────────── */
+.social-section { background: var(--moss); }
+.social-inner { max-width: 1360px; margin: 0 auto; }
+.social-icons {
+  display: flex; gap: 2rem; margin-top: 4rem; flex-wrap: wrap;
+}
+.social-link {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.2rem 2rem;
+  border: 1px solid rgba(232,217,106,0.18); text-decoration: none;
+  color: var(--cream); opacity: 0.55;
+  transition: opacity 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.3s var(--ease-spring);
+}
+.social-link:hover { opacity: 1; color: var(--gold); border-color: var(--gold); box-shadow: 0 0 28px var(--gold-dim); transform: translateY(-3px); }
+.social-link svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+.social-link span { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; }
+
+/* ─── CONTACT ────────────────────────────────────────────────── */
+.contact-section { background: var(--forest); }
+.contact-inner { max-width: 1360px; margin: 0 auto; }
+.contact-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; border: 1px solid rgba(232,217,106,0.1);
+  margin-top: 4.5rem;
+}
+.contact-card {
+  padding: 3rem 2.5rem; border-right: 1px solid rgba(232,217,106,0.1);
+  transition: background 0.4s ease;
+}
+.contact-card:last-child { border-right: none; }
+.contact-card:hover { background: rgba(232,217,106,0.03); }
+.contact-icon {
+  width: 44px; height: 44px; margin-bottom: 1.4rem;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(232,217,106,0.25);
+}
+.contact-icon svg { width: 20px; height: 20px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
+.contact-label { font-size: 0.58rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); opacity: 0.7; margin-bottom: 0.7rem; }
+.contact-value { font-size: 0.92rem; color: var(--cream); opacity: 0.75; line-height: 1.6; }
+.contact-value a { color: inherit; text-decoration: none; transition: color 0.3s ease, opacity 0.3s ease; }
+.contact-value a:hover { color: var(--gold); opacity: 1; }
+
+/* ─── FOOTER ─────────────────────────────────────────────────── */
+footer {
+  background: var(--ink); padding: 6rem 5rem 5rem;
+  border-top: 1px solid rgba(232,217,106,0.07);
+}
+.footer-inner {
+  max-width: 1360px; margin: 0 auto;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem;
+}
+.footer-wordmark {
+  font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400;
+  font-size: 3rem; color: var(--gold); letter-spacing: 0.05em; display: block; margin-bottom: 1rem;
+}
+.footer-desc { font-size: 0.75rem; line-height: 1.85; opacity: 0.38; max-width: 260px; }
+footer h5 { font-size: 0.58rem; letter-spacing: 0.38em; text-transform: uppercase; color: var(--gold); opacity: 0.7; margin-bottom: 1.4rem; }
+footer ul { list-style: none; }
+footer ul li { margin-bottom: 0.65rem; }
+footer ul a { font-size: 0.78rem; color: var(--cream); text-decoration: none; opacity: 0.42; transition: opacity 0.3s ease, color 0.3s ease; }
+footer ul a:hover { opacity: 1; color: var(--gold); }
+
+.footer-base {
+  max-width: 1360px; margin: 3.5rem auto 0; padding-top: 2rem;
+  border-top: 1px solid rgba(232,217,106,0.07);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-base p { font-size: 0.6rem; opacity: 0.28; letter-spacing: 0.12em; }
+
+/* ─── STICKY BAR ─────────────────────────────────────────────── */
+.sticky-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 800;
+  background: rgba(26,30,10,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(232,217,106,0.1);
+  padding: 0.85rem 5rem;
+  display: flex; justify-content: space-between; align-items: center;
+  opacity: 0.8; transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.sticky-bar.hide { transform: translateY(100%); }
+.sticky-bar:hover { opacity: 1; }
+.sticky-left { display: flex; gap: 2.5rem; align-items: center; }
+.sticky-left a {
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--cream); text-decoration: none; opacity: 0.5;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+.sticky-left a:hover { opacity: 1; color: var(--gold); }
+.sticky-sep { width: 1px; height: 16px; background: rgba(232,217,106,0.2); }
+.sticky-cta {
+  display: inline-flex; align-items: center; gap: 0.7rem;
+  padding: 0.58rem 1.8rem; background: var(--gold); color: var(--forest);
+  font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+  text-decoration: none; font-weight: 500;
+  transition: box-shadow 0.3s ease, transform 0.3s var(--ease-spring), background 0.3s ease;
+}
+.sticky-cta:hover { box-shadow: 0 0 28px var(--gold-glow); transform: translateY(-1px); background: var(--gold-pale); }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .albums-grid { grid-template-columns: repeat(2,1fr); }
+  .premium-card { grid-column: 1 / -1; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 1024px) {
+  section { padding: 7rem 3rem; }
+  nav { padding: 1.6rem 3rem; }
+  nav.scrolled { padding: 1.1rem 3rem; }
+  .sticky-bar { padding: 0.85rem 3rem; }
+  .about-inner { grid-template-columns: 1fr; gap: 4rem; }
+  .about-img-frame::after { display: none; }
+  .services-grid { grid-template-columns: 1fr; }
+  .service-card { border-right: none; border-bottom: 1px solid rgba(232,217,106,0.1); }
+  .service-card:last-child { border-bottom: none; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .contact-card { border-right: none; border-bottom: 1px solid rgba(232,217,106,0.1); }
+  .contact-card:last-child { border-bottom: none; }
+}
+@media (max-width: 768px) {
+  nav { padding: 1.4rem 2rem; }
+  nav.scrolled { padding: 1rem 2rem; }
+  .nav-links { display: none; }
+  .nav-toggle { display: flex; }
+  .albums-grid { grid-template-columns: 1fr; }
+  .premium-card { grid-template-columns: 1fr; }
+  .premium-card .album-cover { min-height: 260px; }
+  .lb-body { grid-template-columns: 1fr; }
+  .lb-strip { display: none; }
+  section { padding: 6rem 2rem; }
+  .sticky-bar { padding: 0.8rem 2rem; }
+  .sticky-left { display: none; }
+  .book-row { grid-template-columns: 1fr; }
+  .gallery-head { grid-template-columns: 1fr; }
+  .gallery-head-desc { text-align: left; }
+  footer { padding: 4rem 2rem 3rem; }
+  .footer-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .footer-base { flex-direction: column; gap: 1rem; text-align: center; }
+  .payment-methods { grid-template-columns: 1fr 1fr; }
+  .country-code-select { min-width: 80px; max-width: 100px; }
+}
+@media (max-width: 480px) {
+  .hero-brand { font-size: clamp(3.5rem, 16vw, 6rem); }
+  .premium-panel { padding: 2.4rem; }
+  .premium-title { font-size: 2rem; }
+  .social-icons { flex-direction: column; }
+  .payment-methods { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────────────────────── -->
+<nav id="nav">
+  <a href="#" class="nav-logo">eban photos</a>
+  <ul class="nav-links">
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#about">Philosophy</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#booking" class="nav-book-link">Book Now</a></li>
+  </ul>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="#gallery" class="mobile-nav-link">Gallery</a>
+  <a href="#about" class="mobile-nav-link">Philosophy</a>
+  <a href="#services" class="mobile-nav-link">Services</a>
+  <a href="#contact" class="mobile-nav-link">Contact</a>
+  <a href="#booking" class="mobile-nav-link">Book Now</a>
+</div>
+
+<!-- ─── HERO ─────────────────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">Visual Artistry · Tarkwa &amp; Beyond</span>
+    <h1 class="hero-brand">eban<br><em>photos</em></h1>
+    <span class="hero-tagline">Where light becomes legacy</span>
+    <a href="#booking" class="hero-cta">Book a Session</a>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-thread"></div>
+  </div>
+</section>
+
+<!-- ─── GALLERY ──────────────────────────────────────────────── -->
+<section class="gallery-section" id="gallery">
+  <div class="gallery-head reveal">
+    <div>
+      <div class="section-tag">Signature Work</div>
+      <h2 class="section-heading">Moments<br><em>made permanent</em></h2>
+    </div>
+    <p class="gallery-head-desc">Each album is a window into a specific world. Click to enter — every frame a conversation between light and intention.</p>
+  </div>
+
+  <div class="albums-grid">
+    <!-- Album 1: Portraiture -->
+    <div class="album-card reveal reveal-d1" data-album="portraiture" tabindex="0" role="button" aria-label="Open Portraiture album">
+      <div class="album-img-wrap">
+        <img class="album-cover" src="images/josphine.jpg" alt="Portraiture — Studio &amp; Location Series">
+        <div class="album-layer"></div>
+      </div>
+      <div class="album-info">
+        <h3 class="album-title">Portraiture</h3>
+        <span class="album-sub">Studio &amp; Location Series</span>
+      </div>
+      <span class="album-badge">Series</span>
+      <div class="album-view-btn" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      </div>
+    </div>
+
+    <!-- Album 2: Editorial -->
+    <div class="album-card reveal reveal-d2" data-album="editorial" tabindex="0" role="button" aria-label="Open Editorial album">
+      <div class="album-img-wrap">
+        <img class="album-cover" src="images/dadzie.jpg.jpg" alt="Editorial — Natural Light &amp; Urban Frame">
+        <div class="album-layer"></div>
+      </div>
+      <div class="album-info">
+        <h3 class="album-title">Editorial</h3>
+        <span class="album-sub">Natural Light &amp; Urban Frame</span>
+      </div>
+      <span class="album-badge">Series</span>
+      <div class="album-view-btn" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      </div>
+    </div>
+
+    <!-- Album 3: Ceremony -->
+    <div class="album-card reveal reveal-d3" data-album="ceremony" tabindex="0" role="button" aria-label="Open Ceremony album">
+      <div class="album-img-wrap">
+        <img class="album-cover" src="images/fel.jpg" alt="Ceremony — Documentary Coverage">
+        <div class="album-layer"></div>
+      </div>
+      <div class="album-info">
+        <h3 class="album-title">Ceremony</h3>
+        <span class="album-sub">Documentary Coverage</span>
+      </div>
+      <span class="album-badge">Series</span>
+      <div class="album-view-btn" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      </div>
+    </div>
+
+    <!-- Album 4: Premium -->
+    <div class="album-card premium-card reveal reveal-d4" id="premium-card" tabindex="0" role="button" aria-label="Unlock Premium Collection">
+      <div class="album-img-wrap" id="premium-img-wrap" style="cursor:pointer;">
+        <img class="album-cover" src="images/yeboah.jpg.jpg" alt="The Intimate Archive — Exclusive Collection" style="aspect-ratio:unset;height:100%;min-height:380px;">
+        <div class="album-layer"></div>
+        <div class="premium-lock-veil" id="premium-lock-veil">
+          <div class="lock-ring">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="premium-panel">
+        <div class="premium-badge-tag">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Premium Collection
+        </div>
+        <h3 class="premium-title">The <em>Intimate</em><br>Archive</h3>
+        <span class="premium-sub">Exclusive · Unreleased Work</span>
+        <p class="premium-desc">A curated vault of rare frames — unseen portraits, raw moments, and the work that doesn't make it to the public eye. Exclusively for those who understand that the finest images are never meant for everyone.</p>
+        <div class="premium-price-block">
+          <span class="premium-price">GHS 15</span>
+          <span class="premium-price-note">one-time · lifetime access</span>
+        </div>
+        <button class="unlock-btn" id="open-modal-btn" type="button">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Unlock Collection</span>
+        </button>
+        <div class="premium-blurred-previews">
+          <img class="blurred-thumb" src="images/yeboah.jpg.jpg" alt="">
+          <img class="blurred-thumb" src="images/dadzie.jpg.jpg" alt="">
+          <img class="blurred-thumb" src="images/josphine.jpg" alt="">
+          <div class="blurred-more">+12</div>
+        </div>
+        <div class="premium-perks">
+          <div class="perk">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            15 exclusive high-resolution frames
+          </div>
+          <div class="perk">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Full-resolution downloads included
+          </div>
+          <div class="perk">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Instant access after payment
+          </div>
+          <div class="perk">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Secured via Paystack · MoMo &amp; Card
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── LIGHTBOX ──────────────────────────────────────────────── -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <div class="lb-head">
+    <span class="lb-name" id="lb-name">Album</span>
+    <div class="lb-actions">
+      <button class="lb-btn" id="lb-close">✕ &nbsp;Close</button>
+    </div>
+  </div>
+  <div class="lb-body">
+    <div class="lb-stage">
+      <button class="lb-arrow lb-prev" id="lb-prev" aria-label="Previous photo">&#8592;</button>
+      <img class="lb-image" id="lb-img" src="" alt="">
+      <button class="lb-arrow lb-next" id="lb-next" aria-label="Next photo">&#8594;</button>
+      <span class="lb-count" id="lb-count"></span>
+      <button class="lb-dl-btn" id="lb-dl-btn" type="button">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </button>
+    </div>
+    <div class="lb-strip">
+      <p class="strip-label">All frames</p>
+      <div id="lb-thumbs"></div>
+    </div>
+  </div>
+  <div class="lb-foot">
+    <p class="lb-foot-text" id="lb-foot-text"></p>
+    <button class="lb-dl-all" id="lb-dl-all" type="button">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download All
+    </button>
+  </div>
+</div>
+
+<!-- ─── PAYMENT MODAL ────────────────────────────────────────── -->
+<div class="modal-veil" id="modal-veil" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+  <div class="modal-box" id="modal-box">
+    <button class="modal-close" id="modal-close" aria-label="Close payment modal">✕ Close</button>
+    <div id="modal-content">
+      <div class="modal-badge">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Exclusive Access
+      </div>
+      <h2 class="modal-title" id="modal-heading">Unlock the<br><em>Premium Archive</em></h2>
+      <p class="modal-sub">Enter your details to complete payment and gain instant access to 15 exclusive, high-resolution frames.</p>
+      <div class="modal-price-row">
+        <span class="modal-price-label">One-time payment</span>
+        <span class="modal-price-val">GHS 15</span>
+      </div>
+
+      <!-- PAYMENT METHOD SELECTOR -->
+      <span class="payment-method-label">Payment Method</span>
+      <div class="payment-methods" role="radiogroup" aria-label="Payment method">
+        <label class="pm-option">
+          <input type="radio" name="pm_method" value="momo" checked>
+          <div class="pm-card">
+            <div class="pm-check"><svg viewBox="0 0 12 10"><polyline points="1 5 4 9 11 1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="pm-icon momo">
+              <svg viewBox="0 0 24 24">
+                <rect x="7" y="2" width="10" height="20" rx="2" ry="2"/>
+                <line x1="12" y1="18" x2="12.01" y2="18" stroke-linecap="round" stroke-width="2"/>
+              </svg>
+            </div>
+            <span class="pm-name">Mobile Money</span>
+            <span class="pm-desc">MTN, Vodafone, AirtelTigo</span>
+          </div>
+        </label>
+        <label class="pm-option">
+          <input type="radio" name="pm_method" value="card">
+          <div class="pm-card">
+            <div class="pm-check"><svg viewBox="0 0 12 10"><polyline points="1 5 4 9 11 1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="pm-icon visa">
+              <svg viewBox="0 0 24 24">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+            </div>
+            <span class="pm-name">Debit / Credit</span>
+            <span class="pm-desc">Visa, Mastercard</span>
+          </div>
+        </label>
+      </div>
+
+      <div class="form-field" id="ff-name">
+        <label for="pm-name-inp">Full Name</label>
+        <input type="text" id="pm-name-inp" placeholder="Your full name" autocomplete="name" maxlength="100">
+        <span class="field-error">Please enter your full name.</span>
+      </div>
+      <div class="form-field" id="ff-email">
+        <label for="pm-email-inp">Email Address</label>
+        <input type="email" id="pm-email-inp" placeholder="your@email.com" autocomplete="email" maxlength="200">
+        <span class="field-error">Please enter a valid email address.</span>
+      </div>
+
+      <!-- SECURITY: Honeypot — bots fill this; humans don't see it -->
+      <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <button class="pay-btn" id="pay-btn" type="button">
+        <svg viewBox="0 0 24 24" id="pay-btn-icon-card" style="display:none"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <svg viewBox="0 0 24 24" id="pay-btn-icon-momo"><rect x="7" y="2" width="10" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-linecap="round" stroke-width="2"/></svg>
+        <span id="pay-btn-label">Pay GHS 15 via Mobile Money</span>
+      </button>
+      <div class="modal-secure">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Secured by Paystack · 256-bit SSL · MoMo &amp; Card
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ABOUT ─────────────────────────────────────────────────── -->
+<section class="about-section" id="about">
+  <div class="about-inner">
+    <div class="about-img-frame reveal">
+      <img src="images/dad.jpg" alt="Behind the lens at eban photos">
+    </div>
+    <div class="about-text">
+      <div class="section-tag reveal">The Philosophy</div>
+      <h2 class="section-heading reveal"><em>Light</em> is the<br>first language</h2>
+      <blockquote class="about-quote reveal">"I do not stop time. I simply remind you it was always worth keeping."</blockquote>
+      <p class="reveal">Some moments are too honest for memory alone. A glance held a second too long. A laugh that comes from somewhere deep. A silence between two people that says more than any word ever could. These are the moments I was made to find.</p>
+      <p class="reveal">Eban photos was born from a belief that beauty is not manufactured — it is uncovered. In you. In your story. In the light that falls exactly as it should, at exactly the right moment.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SERVICES ──────────────────────────────────────────────── -->
+<section class="services-section" id="services">
+  <div class="services-inner">
+    <div class="section-tag reveal">Offerings</div>
+    <h2 class="section-heading reveal">Curated <em>sessions</em></h2>
+    <div class="services-grid reveal">
+      <div class="service-card">
+        <span class="service-num">01</span>
+        <h3>Portrait<br>Session</h3>
+        <p>An intimate two-hour studio or location session focused on individual or family portraiture. Every image is a dialogue between subject and light.</p>
+      </div>
+      <div class="service-card">
+        <span class="service-num">02</span>
+        <h3>Editorial &amp;<br>Brand</h3>
+        <p>Full-day commercial production for brands, executives, and campaigns demanding images that carry cultural weight and visual authority.</p>
+      </div>
+      <div class="service-card">
+        <span class="service-num">03</span>
+        <h3>Ceremony &amp;<br>Event</h3>
+        <p>Documentary coverage of weddings, engagements, and life milestones — preserving the unrepeatable with precision, grace, and feeling.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BOOKING ───────────────────────────────────────────────── -->
+<section class="booking-section" id="booking">
+  <div class="booking-inner">
+    <div class="section-tag reveal">Inquire</div>
+    <h2 class="section-heading reveal">Book a<br><em>session</em></h2>
+    <p class="sub reveal">Complete the form below and expect a personal response within 24 hours. Every collaboration begins with a conversation.</p>
+    <form class="book-form" id="booking-form" action="https://formspree.io/f/mwvwwbdk" method="POST" novalidate>
+      <!-- SECURITY: CSRF token — server replaces REPLACE_WITH_CSRF_TOKEN -->
+      <input type="hidden" name="_csrf" id="csrf-token" value="REPLACE_WITH_CSRF_TOKEN">
+      <!-- SECURITY: Honeypot — hidden from real users -->
+      <input type="text" name="_gotcha" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input type="hidden" name="_subject" value="New Session Request — eban photos">
+
+      <div class="book-row reveal">
+        <div class="book-field half" id="bf-first">
+          <input type="text" name="first_name" id="bf-first-inp" required placeholder=" " maxlength="80" autocomplete="given-name">
+          <label for="bf-first-inp">First Name</label>
+          <span class="book-error">First name is required.</span>
+        </div>
+        <div class="book-field half" id="bf-last">
+          <input type="text" name="last_name" id="bf-last-inp" required placeholder=" " maxlength="80" autocomplete="family-name">
+          <label for="bf-last-inp">Last Name</label>
+          <span class="book-error">Last name is required.</span>
+        </div>
+      </div>
+      <div class="book-field reveal" id="bf-email">
+        <input type="email" name="email" id="bf-email-inp" required placeholder=" " maxlength="200" autocomplete="email">
+        <label for="bf-email-inp">Email Address</label>
+        <span class="book-error">A valid email is required.</span>
+      </div>
+
+      <div class="book-field reveal" id="bf-phone">
+        <div class="phone-wrap">
+          <select class="country-code-select" id="bf-country-code" name="country_code" aria-label="Country code">
+            <option value="+233" selected>&#127468;&#127469; +233</option>
+            <option value="+1">&#127482;&#127480; +1</option>
+            <option value="+44">&#127468;&#127463; +44</option>
+            <option value="+27">&#127487;&#127462; +27</option>
+            <option value="+234">&#127475;&#127468; +234</option>
+            <option value="+254">&#127472;&#127466; +254</option>
+            <option value="+256">&#127482;&#127468; +256</option>
+            <option value="+255">&#127481;&#127487; +255</option>
+            <option value="+225">&#127464;&#127470; +225</option>
+            <option value="+221">&#127480;&#127475; +221</option>
+            <option value="+237">&#127464;&#127474; +237</option>
+            <option value="+212">&#127474;&#127462; +212</option>
+            <option value="+20">&#127466;&#127468; +20</option>
+            <option value="+251">&#127466;&#127481; +251</option>
+            <option value="+49">&#127465;&#127466; +49</option>
+            <option value="+33">&#127467;&#127479; +33</option>
+            <option value="+91">&#127470;&#127475; +91</option>
+            <option value="+86">&#127464;&#127475; +86</option>
+            <option value="+971">&#127462;&#127466; +971</option>
+            <option value="+61">&#127462;&#127482; +61</option>
+            <option value="+55">&#127463;&#127479; +55</option>
+            <option value="+52">&#127474;&#127485; +52</option>
+            <option value="+81">&#127471;&#127477; +81</option>
+            <option value="+82">&#127472;&#127479; +82</option>
+            <option value="+7">&#127479;&#127482; +7</option>
+            <option value="+39">&#127470;&#127481; +39</option>
+            <option value="+34">&#127466;&#127480; +34</option>
+            <option value="+31">&#127475;&#127473; +31</option>
+            <option value="+46">&#127480;&#127466; +46</option>
+            <option value="+41">&#127464;&#127469; +41</option>
+          </select>
+          <input type="tel" name="phone" id="bf-phone-inp" placeholder=" " maxlength="15" autocomplete="tel" pattern="[0-9]{7,15}">
+          <label for="bf-phone-inp" class="phone-field-label" id="bf-phone-label">Phone Number</label>
+        </div>
+        <span class="book-error">Please enter a valid phone number.</span>
+      </div>
+
+      <div class="book-row reveal">
+        <div class="book-field half" id="bf-service">
+          <select name="service" id="bf-service-sel" required>
+            <option value="" disabled selected></option>
+            <option value="portrait">Portrait Session</option>
+            <option value="editorial">Editorial / Brand</option>
+            <option value="ceremony">Ceremony / Event</option>
+            <option value="lifestyle">Lifestyle</option>
+            <option value="other">Other</option>
+          </select>
+          <label for="bf-service-sel">Type of Shoot</label>
+          <span class="book-error">Please select a service type.</span>
+        </div>
+        <div class="book-field half">
+          <input type="date" name="preferred_date" id="bf-date-inp" placeholder=" ">
+          <label for="bf-date-inp">Preferred Date</label>
+        </div>
+      </div>
+      <div class="book-field reveal" id="bf-msg">
+        <textarea name="message" id="bf-msg-inp" placeholder=" " maxlength="2000"></textarea>
+        <label for="bf-msg-inp">Tell me about your vision</label>
+        <span class="book-error">Please share a brief message.</span>
+      </div>
+      <button type="submit" class="btn-submit reveal" id="book-submit">
+        <span id="book-btn-text">Send Request</span>
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- ─── SOCIAL ────────────────────────────────────────────────── -->
+<section class="social-section" id="social">
+  <div class="social-inner">
+    <div class="section-tag reveal">Connect</div>
+    <h2 class="section-heading reveal">Follow the<br><em>work</em></h2>
+    <div class="social-icons reveal">
+      <a href="https://instagram.com/ebanphotos" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Follow on Instagram">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        <span>Instagram</span>
+        <span style="font-size:0.6rem;opacity:0.4;letter-spacing:0.1em;">@ebanphotos</span>
+      </a>
+      <a href="https://facebook.com/ebanphotos" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Follow on Facebook">
+        <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        <span>Facebook</span>
+        <span style="font-size:0.6rem;opacity:0.4;letter-spacing:0.1em;">eban photos</span>
+      </a>
+      <a href="https://wa.me/233543815959?text=Hello%2C%20I%27d%20like%20to%20book%20a%20session%20with%20eban%20photos." target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Chat on WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        <span>WhatsApp</span>
+        <span style="font-size:0.6rem;opacity:0.4;letter-spacing:0.1em;">+233 543 815 959</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ───────────────────────────────────────────────── -->
+<section class="contact-section" id="contact">
+  <div class="contact-inner">
+    <div class="section-tag reveal">Get in Touch</div>
+    <h2 class="section-heading reveal">Let's <em>connect</em></h2>
+    <div class="contact-grid reveal">
+      <div class="contact-card">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <p class="contact-label">Email</p>
+        <p class="contact-value"><a href="mailto:eban@ebanphotos.com">eban@ebanphotos.com</a></p>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.7 16v.92z"/></svg>
+        </div>
+        <p class="contact-label">Phone</p>
+        <p class="contact-value"><a href="tel:+233543815959">+233 (0) 543 815 959</a></p>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <p class="contact-label">Location</p>
+        <p class="contact-value">Tarkwa, Ghana<br><span style="opacity:0.5;font-size:0.8rem;">Available Worldwide</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ────────────────────────────────────────────────── -->
+<footer id="footer">
+  <div class="footer-inner">
+    <div>
+      <span class="footer-wordmark">eban</span>
+      <p class="footer-desc">Visual artistry rooted in the human moment. Based in Tarkwa, Ghana — capturing light wherever it falls.</p>
+    </div>
+    <div>
+      <h5>Navigate</h5>
+      <ul>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#about">Philosophy</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#booking">Book</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Social</h5>
+      <ul>
+        <li><a href="https://instagram.com/ebanphotos" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://facebook.com/ebanphotos" target="_blank" rel="noopener">Facebook</a></li>
+        <li><a href="https://wa.me/233543815959" target="_blank" rel="noopener">WhatsApp</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Contact</h5>
+      <ul>
+        <li><a href="mailto:eban@ebanphotos.com">eban@ebanphotos.com</a></li>
+        <li><a href="tel:+233543815959">+233 (0) 543 815 959</a></li>
+        <li><a href="#">Tarkwa, Ghana</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-base">
+    <p>© 2026 eban photos. All rights reserved.</p>
+    <p style="font-style:italic;font-family:'Playfair Display',serif;">Crafted with intention.</p>
+  </div>
+</footer>
+
+<!-- ─── STICKY BAR ────────────────────────────────────────────── -->
+<div class="sticky-bar" id="sticky-bar">
+  <div class="sticky-left">
+    <a href="https://wa.me/233543815959?text=Hello%2C%20I%27d%20like%20to%20book%20a%20session." target="_blank" rel="noopener">WhatsApp Us</a>
+    <div class="sticky-sep"></div>
+    <a href="mailto:eban@ebanphotos.com">eban@ebanphotos.com</a>
+    <div class="sticky-sep"></div>
+    <a href="tel:+233543815959">+233543815959 · Tarkwa</a>
+  </div>
+  <a href="#booking" class="sticky-cta">Book a Session</a>
+</div>
+
+<script nonce="REPLACE_WITH_SERVER_NONCE">
+(function() {
+'use strict';
+
+function sanitize(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+    .replace(/\//g, '&#x2F;')
+    .replace(/`/g, '&#x60;')
+    .replace(/=/g, '&#x3D;');
+}
+
+
+function createSafeElement(tag, attrs, textContent) {
+  var el = document.createElement(tag);
+  if (attrs) {
+    Object.keys(attrs).forEach(function(key) {
+      // [SEC] Only allow safe attribute names — block event handlers
+      if (/^on/i.test(key)) return;
+      if (['href', 'src', 'action'].indexOf(key) !== -1) {
+        // [SEC] URL attributes: only allow http/https/relative paths
+        var val = String(attrs[key]);
+        if (/^(javascript|data|vbscript):/i.test(val.trim())) return;
+        el.setAttribute(key, val);
+      } else {
+        el.setAttribute(key, sanitize(String(attrs[key])));
+      }
+    });
+  }
+  if (textContent !== undefined) {
+    el.appendChild(document.createTextNode(String(textContent)));
+  }
+  return el;
+}
+
+
+var VALIDATORS = {
+  name:  function(v) { return v.length >= 2 && v.length <= 100 && /^[\p{L}\s'\-\.]+$/u.test(v); },
+  email: function(v) { return /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(v) && v.length <= 200; },
+  phone: function(v) { return v === '' || /^[0-9]{7,15}$/.test(v); },
+  text:  function(v) { return v.length >= 1 && v.length <= 2000; },
+  date:  function(v) { return v === '' || /^\d{4}-\d{2}-\d{2}$/.test(v); }
+};
+
+var RateLimiter = (function() {
+  var attempts = {};
+  return {
+    check: function(key, maxAttempts, windowMs) {
+      var now = Date.now();
+      if (!attempts[key]) attempts[key] = [];
+      // Purge old entries outside the window
+      attempts[key] = attempts[key].filter(function(t) { return now - t < windowMs; });
+      if (attempts[key].length >= maxAttempts) return false;
+      attempts[key].push(now);
+      return true;
+    },
+    reset: function(key) { delete attempts[key]; }
+  };
+})();
+
+var premiumUnlocked = false; // Always false until server confirms
+
+// [SEC] On load, verify any stored session token with the server
+(function verifyStoredSession() {
+  var token = (function() {
+    try { return localStorage.getItem('eban_access_token'); } catch(e) { return null; }
+  })();
+  if (!token) return;
+
+  // [SEC] Validate token format before sending (must be alphanumeric, 32-64 chars)
+  if (!/^[a-zA-Z0-9_\-]{32,128}$/.test(token)) {
+    try { localStorage.removeItem('eban_access_token'); } catch(e) {}
+    return;
+  }
+
+  fetch('/api/verify-session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
+    body: JSON.stringify({ token: token })
+  })
+  .then(function(res) { return res.ok ? res.json() : Promise.reject('not ok'); })
+  .then(function(data) {
+    if (data && data.valid === true) {
+      premiumUnlocked = true;
+      applyUnlockedUI();
+    } else {
+      // [SEC] Invalid token — remove from storage
+      try { localStorage.removeItem('eban_access_token'); } catch(e) {}
+    }
+  })
+  .catch(function() {
+    // Network error or server down — do NOT grant access
+  });
+})();
+
+/* ── NAV ─────────────────────────────────────────────────── */
+var nav = document.getElementById('nav');
+var stickyBar = document.getElementById('sticky-bar');
+var navToggle = document.getElementById('nav-toggle');
+var mobileMenu = document.getElementById('mobile-menu');
+var lastScrollY = 0;
+
+window.addEventListener('scroll', function() {
+  var cur = window.scrollY;
+  if (cur > lastScrollY && cur > 80) {
+    nav.classList.add('hide');
+    stickyBar.classList.add('hide');
+  } else {
+    nav.classList.remove('hide');
+    stickyBar.classList.remove('hide');
+  }
+  if (cur > 60) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+  lastScrollY = cur;
+}, { passive: true });
+
+navToggle.addEventListener('click', function() {
+  var open = navToggle.classList.toggle('open');
+  mobileMenu.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+});
+document.querySelectorAll('.mobile-nav-link').forEach(function(link) {
+  link.addEventListener('click', function() {
+    navToggle.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+});
+
+/* ── SCROLL REVEAL ───────────────────────────────────────── */
+var reveals = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window) {
+  var revealObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+  reveals.forEach(function(r) { revealObs.observe(r); });
+} else {
+  reveals.forEach(function(r) { r.classList.add('visible'); });
+}
+
+/* ── ALBUM DATA ──────────────────────────────────────────── */
+var ALBUMS = {
+  portraiture: {
+    name: 'Portraiture — Studio Series',
+    images: [
+      { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&q=85', caption: 'Studio I' },
+      { src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1200&q=85', caption: 'Golden Hour' },
+      { src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200&q=85', caption: 'Minimal Canvas' },
+      { src: 'https://images.unsplash.com/photo-1488161628813-04466f872be2?w=1200&q=85', caption: 'Urban Frame' },
+      { src: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=1200&q=85', caption: 'Studio II' },
+      { src: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=1200&q=85', caption: 'Candid Depth' },
+      { src: 'https://images.unsplash.com/photo-1519404851957-4c27fdc24c5b?w=1200&q=85', caption: 'Lifestyle' }
+    ]
+  },
+  editorial: {
+    name: 'Editorial & Brand',
+    images: [
+      { src: 'https://images.unsplash.com/photo-1502720705749-871143f0e671?w=1200&q=85', caption: 'Commercial I' },
+      { src: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1200&q=85', caption: 'Natural Light' },
+      { src: 'https://images.unsplash.com/photo-1488161628813-04466f872be2?w=1200&q=85', caption: 'Urban Frame' },
+      { src: 'https://images.unsplash.com/photo-1554080353-a576cf803bda?w=1200&q=85', caption: 'Behind the Lens' },
+      { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&q=85', caption: 'Brand Portrait' },
+      { src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200&q=85', caption: 'Campaign' }
+    ]
+  },
+  ceremony: {
+    name: 'Ceremony & Event',
+    images: [
+      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=85', caption: 'Ceremony I' },
+      { src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1200&q=85', caption: 'Golden Vows' },
+      { src: 'https://images.unsplash.com/photo-1519404851957-4c27fdc24c5b?w=1200&q=85', caption: 'Candid Joy' },
+      { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=85', caption: 'Celebration' },
+      { src: 'https://images.unsplash.com/photo-1502720705749-871143f0e671?w=1200&q=85', caption: 'Reception' },
+      { src: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=1200&q=85', caption: 'Details' }
+    ]
+  },
+  premium: {
+    name: 'The Intimate Archive — Premium',
+    images: [
+      { src: 'https://images.unsplash.com/photo-1554080353-a576cf803bda?w=1200&q=85', caption: 'Archive I' },
+      { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&q=85', caption: 'Archive II' },
+      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=85', caption: 'Archive III' },
+      { src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1200&q=85', caption: 'Archive IV' },
+      { src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200&q=85', caption: 'Archive V' },
+      { src: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1200&q=85', caption: 'Archive VI' },
+      { src: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=1200&q=85', caption: 'Archive VII' },
+      { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=85', caption: 'Archive VIII' },
+      { src: 'https://images.unsplash.com/photo-1488161628813-04466f872be2?w=1200&q=85', caption: 'Archive IX' },
+      { src: 'https://images.unsplash.com/photo-1502720705749-871143f0e671?w=1200&q=85', caption: 'Archive X' },
+      { src: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=1200&q=85', caption: 'Archive XI' },
+      { src: 'https://images.unsplash.com/photo-1519404851957-4c27fdc24c5b?w=1200&q=85', caption: 'Archive XII' },
+      { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&q=85', caption: 'Archive XIII' },
+      { src: 'https://images.unsplash.com/photo-1554080353-a576cf803bda?w=1200&q=85', caption: 'Archive XIV' },
+      { src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1200&q=85', caption: 'Archive XV' }
+    ]
+  }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   [SEC-6] PAYSTACK CONFIG
+   ONLY the PUBLIC key is used in frontend code.
+   The SECRET key lives exclusively in server.js (never exposed here).
+   Amount and currency are also validated server-side.
+   ══════════════════════════════════════════════════════════════ */
+var PS_KEY      = 'pk_live_b11c21ce75a9bb21ed3e05d2337c8bc40a093794'; // Public key only — safe in frontend
+var PS_AMOUNT   = 15 * 100; // 1500 pesewas = GHS 15
+var PS_CURRENCY = 'GHS';
+
+/* ── PAYMENT METHOD TOGGLE ───────────────────────────────── */
+var pmRadios       = document.querySelectorAll('input[name="pm_method"]');
+var payBtnLabel    = document.getElementById('pay-btn-label');
+var payBtnIconCard = document.getElementById('pay-btn-icon-card');
+var payBtnIconMomo = document.getElementById('pay-btn-icon-momo');
+
+function updatePayBtn() {
+  var checked = document.querySelector('input[name="pm_method"]:checked');
+  if (!checked) return;
+  // [SEC] Whitelist-validate the payment method value
+  var val = ['momo', 'card'].indexOf(checked.value) !== -1 ? checked.value : 'momo';
+  if (val === 'momo') {
+    // [SEC] Use createTextNode instead of textContent interpolation for safety
+    payBtnLabel.textContent = 'Pay GHS 15 via Mobile Money';
+    payBtnIconCard.style.display = 'none';
+    payBtnIconMomo.style.display = '';
+  } else {
+    payBtnLabel.textContent = 'Pay GHS 15 via Card';
+    payBtnIconCard.style.display = '';
+    payBtnIconMomo.style.display = 'none';
+  }
+}
+pmRadios.forEach(function(r) { r.addEventListener('change', updatePayBtn); });
+
+/* ── LIGHTBOX ────────────────────────────────────────────── */
+var lightbox  = document.getElementById('lightbox');
+var lbName    = document.getElementById('lb-name');
+var lbImg     = document.getElementById('lb-img');
+var lbCount   = document.getElementById('lb-count');
+var lbThumbs  = document.getElementById('lb-thumbs');
+var lbDlBtn   = document.getElementById('lb-dl-btn');
+var lbFootTxt = document.getElementById('lb-foot-text');
+var currentAlbum = null;
+var currentIdx   = 0;
+
+function openAlbum(key) {
+  // [SEC] Whitelist-validate the album key against ALBUMS object
+  if (!ALBUMS.hasOwnProperty(key)) return;
+  // [SEC] Enforce premium check for premium album — server-verified flag
+  if (key === 'premium' && !premiumUnlocked) {
+    openPayModal();
+    return;
+  }
+  currentAlbum = ALBUMS[key];
+  currentIdx   = 0;
+
+  // [SEC] Use textContent, never innerHTML, for user/data-derived content
+  lbName.textContent    = currentAlbum.name;
+  lbFootTxt.textContent = currentAlbum.images.length + ' frames in this album';
+
+  // [SEC] Clear thumbs safely — remove all children
+  while (lbThumbs.firstChild) lbThumbs.removeChild(lbThumbs.firstChild);
+
+  currentAlbum.images.forEach(function(img, i) {
+    // [SEC] Build DOM nodes with safe helpers, never innerHTML with data
+    var item = document.createElement('div');
+    item.className = 'strip-thumb' + (i === 0 ? ' active' : '');
+    item.setAttribute('tabindex', '0');
+    item.setAttribute('role', 'button');
+    item.setAttribute('aria-label', 'View ' + sanitize(img.caption));
+
+    // Thumbnail image — src validated against expected URL pattern
+    var thumbImg = document.createElement('img');
+    var thumbSrc = img.src.replace('w=1200', 'w=400');
+    // [SEC] Validate image URL — only allow https://images.unsplash.com
+    if (/^https:\/\/images\.unsplash\.com\//.test(thumbSrc)) {
+      thumbImg.src = thumbSrc;
+    }
+    thumbImg.alt     = sanitize(img.caption);
+    thumbImg.loading = 'lazy';
+
+    var footer = document.createElement('div');
+    footer.className = 'strip-thumb-footer';
+
+    var captionSpan = document.createElement('span');
+    captionSpan.textContent = img.caption; // textContent — safe
+
+    // Download button built with safe elements
+    var dlBtn = document.createElement('button');
+    dlBtn.className  = 'strip-dl';
+    dlBtn.type       = 'button';
+    dlBtn.title      = 'Download';
+    dlBtn.setAttribute('aria-label', 'Download ' + sanitize(img.caption));
+    // SVG icon — static, not user data
+    dlBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+    dlBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dlImage(img.src, img.caption);
+    });
+
+    footer.appendChild(captionSpan);
+    footer.appendChild(dlBtn);
+    item.appendChild(thumbImg);
+    item.appendChild(footer);
+
+    item.addEventListener('click', function(e) {
+      if (e.target.closest('.strip-dl')) return;
+      goTo(i);
+    });
+    item.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goTo(i); }
+    });
+    lbThumbs.appendChild(item);
+  });
+
+  goTo(0, true);
+  lightbox.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { lightbox.classList.add('visible'); });
+  });
+}
+
+function goTo(idx, instant) {
+  var imgs = currentAlbum.images;
+  currentIdx = (idx + imgs.length) % imgs.length;
+  var img = imgs[currentIdx];
+
+  if (!instant) {
+    lbImg.classList.add('fade');
+    setTimeout(function() {
+      // [SEC] Validate src before assigning
+      if (/^https:\/\/images\.unsplash\.com\//.test(img.src)) {
+        lbImg.src = img.src;
+      }
+      lbImg.alt = sanitize(img.caption);
+      lbImg.classList.remove('fade');
+    }, 280);
+  } else {
+    if (/^https:\/\/images\.unsplash\.com\//.test(img.src)) {
+      lbImg.src = img.src;
+    }
+    lbImg.alt = sanitize(img.caption);
+  }
+
+  lbCount.textContent = (currentIdx + 1) + ' / ' + imgs.length;
+
+  document.querySelectorAll('.strip-thumb').forEach(function(el, i) {
+    el.classList.toggle('active', i === currentIdx);
+  });
+  var active = lbThumbs.querySelectorAll('.strip-thumb')[currentIdx];
+  if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('visible');
+  setTimeout(function() {
+    lightbox.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 400);
+}
+
+// [SEC] Safe download — validates URL before creating download anchor
+function dlImage(src, name) {
+  if (!/^https:\/\/images\.unsplash\.com\//.test(src)) return;
+  var a = document.createElement('a');
+  a.href     = src;
+  a.download = sanitize(name || 'eban-photo');
+  a.target   = '_blank';
+  a.rel      = 'noopener noreferrer';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+lbDlBtn.addEventListener('click', function() {
+  if (!currentAlbum) return;
+  dlImage(currentAlbum.images[currentIdx].src, currentAlbum.images[currentIdx].caption);
+});
+document.getElementById('lb-dl-all').addEventListener('click', function() {
+  if (!currentAlbum) return;
+  currentAlbum.images.forEach(function(img, i) {
+    setTimeout(function() { dlImage(img.src, img.caption); }, i * 320);
+  });
+});
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-prev').addEventListener('click', function() { goTo(currentIdx - 1); });
+document.getElementById('lb-next').addEventListener('click', function() { goTo(currentIdx + 1); });
+lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', function(e) {
+  if (lightbox.style.display !== 'flex') return;
+  if (e.key === 'Escape')     closeLightbox();
+  if (e.key === 'ArrowLeft')  goTo(currentIdx - 1);
+  if (e.key === 'ArrowRight') goTo(currentIdx + 1);
+});
+
+/* Album card click handlers */
+document.querySelectorAll('.album-card:not(.premium-card)').forEach(function(card) {
+  function handler() {
+    // [SEC] Validate album key from data attribute before use
+    var key = card.dataset.album;
+    if (key && /^[a-zA-Z0-9_\-]+$/.test(key) && ALBUMS.hasOwnProperty(key)) {
+      openAlbum(key);
+    }
+  }
+  card.addEventListener('click', handler);
+  card.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); }
+  });
+});
+
+/* Premium card */
+document.getElementById('premium-img-wrap').addEventListener('click', function() {
+  if (premiumUnlocked) openAlbum('premium');
+  else openPayModal();
+});
+document.getElementById('open-modal-btn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  if (premiumUnlocked) openAlbum('premium');
+  else openPayModal();
+});
+
+/* ── PAYMENT MODAL ────────────────────────────────────────── */
+var modalVeil = document.getElementById('modal-veil');
+
+function openPayModal() {
+  modalVeil.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { modalVeil.classList.add('visible'); });
+  });
+}
+function closePayModal() {
+  modalVeil.classList.remove('visible');
+  setTimeout(function() {
+    modalVeil.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 400);
+}
+document.getElementById('modal-close').addEventListener('click', closePayModal);
+modalVeil.addEventListener('click', function(e) { if (e.target === modalVeil) closePayModal(); });
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && modalVeil.classList.contains('visible')) closePayModal();
+});
+
+function validateModalField(inputEl, container, ruleKey) {
+  var val = inputEl.value.trim();
+  var valid = VALIDATORS[ruleKey] ? VALIDATORS[ruleKey](val) : val.length > 0;
+  container.classList.toggle('error', !valid);
+  return valid;
+}
+
+document.getElementById('pay-btn').addEventListener('click', function() {
+  /* [SEC] Honeypot check — bots fill this field */
+  var hp = modalVeil.querySelector('input[name="website"]');
+  if (hp && hp.value.length > 0) return; // Silent reject
+
+  var nameEl  = document.getElementById('pm-name-inp');
+  var emailEl = document.getElementById('pm-email-inp');
+  var ffName  = document.getElementById('ff-name');
+  var ffEmail = document.getElementById('ff-email');
+
+  /* [SEC] Validate with strict rules before proceeding */
+  var okName  = validateModalField(nameEl,  ffName,  'name');
+  var okEmail = validateModalField(emailEl, ffEmail, 'email');
+  if (!okName || !okEmail) return;
+
+  /* [SEC] Client-side rate limiting — max 3 payment attempts per 5 min */
+  if (!RateLimiter.check('payment', 3, 5 * 60 * 1000)) {
+    payBtnLabel.textContent = 'Too many attempts. Please wait.';
+    setTimeout(function() { updatePayBtn(); }, 3000);
+    return;
+  }
+
+  if (typeof PaystackPop === 'undefined') {
+    alert('Payment system is loading. Please wait a moment and try again.');
+    return;
+  }
+
+  /* [SEC] Whitelist-validate selected payment method */
+  var checkedMethod = document.querySelector('input[name="pm_method"]:checked');
+  var selectedMethod = (checkedMethod && ['momo', 'card'].indexOf(checkedMethod.value) !== -1)
+    ? checkedMethod.value : 'momo';
+
+  var btn = document.getElementById('pay-btn');
+  btn.disabled = true;
+  payBtnLabel.textContent = 'Opening payment…';
+
+  var channels = selectedMethod === 'momo' ? ['mobile_money_ghana'] : ['card'];
+
+  /* [SEC] Generate a cryptographically unique reference (not predictable) */
+  var ref = 'eban_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+
+  var handler = PaystackPop.setup({
+    key:      PS_KEY,
+    email:    emailEl.value.trim(),
+    amount:   PS_AMOUNT,
+    currency: PS_CURRENCY,
+    channels: channels,
+    ref:      ref,
+    metadata: {
+      custom_fields: [
+        { display_name: 'Customer Name',  variable_name: 'name',    value: nameEl.value.trim().slice(0, 100) },
+        { display_name: 'Payment Method', variable_name: 'method',  value: selectedMethod },
+        { display_name: 'Product',        variable_name: 'product', value: 'eban photos — Premium Archive' }
+      ]
+    },
+    callback: function(response) {
+     
+      payBtnLabel.textContent = 'Verifying payment…';
+      verifyPaymentServerSide(response.reference, nameEl.value.trim());
+    },
+    onClose: function() {
+      btn.disabled = false;
+      updatePayBtn();
+    }
+  });
+
+  handler.openIframe();
+});
+
+
+function verifyPaymentServerSide(reference, fullName) {
+  // [SEC] Validate reference format before sending to server
+  if (!/^[a-zA-Z0-9_\-]{8,128}$/.test(reference)) {
+    showPaymentError();
+    return;
+  }
+
+  fetch('/api/verify-payment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // [SEC] CSRF token from the booking form (re-used as page-level CSRF)
+      'X-CSRF-Token': (document.getElementById('csrf-token') || {}).value || ''
+    },
+    credentials: 'same-origin',
+    body: JSON.stringify({
+      reference: reference,
+      product:   'premium_archive'
+    })
+  })
+  .then(function(res) {
+    if (!res.ok) return Promise.reject('server_error_' + res.status);
+    return res.json();
+  })
+  .then(function(data) {
+    if (data && data.verified === true && data.accessToken) {
+      // [SEC] Store the signed access token (JWT) — not a simple boolean
+      try { localStorage.setItem('eban_access_token', data.accessToken); } catch(e) {}
+      grantPremiumAccess(fullName);
+    } else {
+      showPaymentError();
+    }
+  })
+  .catch(function(err) {
+    showPaymentError();
+  });
+}
+
+function showPaymentError() {
+  var btn = document.getElementById('pay-btn');
+  btn.disabled = false;
+  payBtnLabel.textContent = 'Verification failed. Contact support.';
+  setTimeout(function() { updatePayBtn(); }, 4000);
+}
+
+/* ── Grant access (called only after server verification) ─── */
+function grantPremiumAccess(fullName) {
+  premiumUnlocked = true;
+  revealUnlockedState(fullName);
+}
+
+function revealUnlockedState(firstName) {
+  var content = document.getElementById('modal-content');
+  // [SEC] Sanitize first name before displaying
+  var fname = sanitize((firstName || 'Collector').split(' ')[0].slice(0, 40));
+
+  // [SEC] Build success UI with DOM API, not innerHTML, for user-derived content
+  var wrapper = document.createElement('div');
+  wrapper.className = 'pay-success';
+
+  // Success ring with checkmark SVG (static, not user data)
+  var ring = document.createElement('div');
+  ring.className = 'pay-success-ring';
+  ring.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  var heading = document.createElement('h3');
+  var headLine1 = document.createTextNode('Access Granted,');
+  var br = document.createElement('br');
+  // [SEC] First name inserted as text node — never as HTML
+  var headLine2 = document.createTextNode(fname + '.');
+  heading.appendChild(headLine1);
+  heading.appendChild(br);
+  heading.appendChild(headLine2);
+
+  var body = document.createElement('p');
+  body.textContent = 'Your payment was successful. The Intimate Archive is now open — every frame, every detail, all yours.';
+
+  var viewBtn = document.createElement('button');
+  viewBtn.className = 'unlock-btn';
+  viewBtn.id        = 'go-to-archive';
+  viewBtn.type      = 'button';
+  viewBtn.style.cssText = 'margin:2rem auto 0;justify-content:center;';
+  viewBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span>View the Archive</span>';
+
+  wrapper.appendChild(ring);
+  wrapper.appendChild(heading);
+  wrapper.appendChild(body);
+  wrapper.appendChild(viewBtn);
+
+  // [SEC] Clear modal content safely
+  while (content.firstChild) content.removeChild(content.firstChild);
+  content.appendChild(wrapper);
+
+  applyUnlockedUI();
+
+  viewBtn.addEventListener('click', function() {
+    closePayModal();
+    setTimeout(function() { openAlbum('premium'); }, 450);
+  });
+}
+
+function applyUnlockedUI() {
+  var lockVeil = document.getElementById('premium-lock-veil');
+  if (lockVeil) {
+    lockVeil.style.backdropFilter = 'none';
+    lockVeil.style.background = 'rgba(13,15,6,0.08)';
+    // [SEC] Build lock UI safely
+    lockVeil.innerHTML = '<div class="lock-ring" style="background:rgba(232,217,106,0.18);border-color:var(--gold)"><svg viewBox="0 0 24 24" style="width:26px;height:26px;stroke:var(--gold);fill:none;stroke-width:1.5"><polyline points="20 6 9 17 4 12"/></svg></div>';
+  }
+  var unlockBtn0 = document.getElementById('open-modal-btn');
+  if (unlockBtn0) {
+    // [SEC] Use textContent for dynamic button label
+    while (unlockBtn0.firstChild) unlockBtn0.removeChild(unlockBtn0.firstChild);
+    var checkSpan = document.createElement('span');
+    checkSpan.textContent = '✓ Unlocked — Click to View';
+    unlockBtn0.appendChild(checkSpan);
+  }
+}
+
+/* ── PHONE FIELD — floating label with country code ─────── */
+var phoneInp      = document.getElementById('bf-phone-inp');
+var phoneLabel    = document.getElementById('bf-phone-label');
+var countrySelect = document.getElementById('bf-country-code');
+
+function syncPhoneLabel() {
+  var filled  = phoneInp.value.trim().length > 0;
+  var focused = document.activeElement === phoneInp;
+  if (filled || focused) {
+    phoneLabel.style.top      = '0.38rem';
+    phoneLabel.style.fontSize = '0.56rem';
+    phoneLabel.style.opacity  = '1';
+    phoneLabel.style.color    = 'var(--gold)';
+  } else {
+    phoneLabel.style.top      = '1.05rem';
+    phoneLabel.style.fontSize = '0.68rem';
+    phoneLabel.style.opacity  = '0.38';
+    phoneLabel.style.color    = 'var(--cream)';
+  }
+}
+
+function positionPhoneLabel() {
+  var selectWidth = countrySelect.offsetWidth;
+  phoneLabel.style.left = (selectWidth + 12) + 'px';
+  syncPhoneLabel();
+}
+
+phoneInp.addEventListener('focus',  function() { positionPhoneLabel(); syncPhoneLabel(); });
+phoneInp.addEventListener('blur',   function() { positionPhoneLabel(); syncPhoneLabel(); });
+phoneInp.addEventListener('input',  function() {
+  // [SEC] Phone input — strip non-digit chars in real time
+  var cleaned = phoneInp.value.replace(/[^0-9]/g, '').slice(0, 15);
+  if (phoneInp.value !== cleaned) phoneInp.value = cleaned;
+  syncPhoneLabel();
+});
+countrySelect.addEventListener('change', function() { positionPhoneLabel(); });
+window.addEventListener('load',   positionPhoneLabel);
+window.addEventListener('resize', positionPhoneLabel);
+
+/* ══════════════════════════════════════════════════════════════
+   [SEC-10] BOOKING FORM — VALIDATION + CSRF + RATE LIMIT
+   ══════════════════════════════════════════════════════════════ */
+var bookForm = document.getElementById('booking-form');
+
+function showBookError(fieldId, show) {
+  var el = document.getElementById(fieldId);
+  if (el) el.classList.toggle('error', show);
+}
+
+function validateBookForm() {
+  var ok    = true;
+  var first = document.getElementById('bf-first-inp').value.trim();
+  var last  = document.getElementById('bf-last-inp').value.trim();
+  var email = document.getElementById('bf-email-inp').value.trim();
+  var svc   = document.getElementById('bf-service-sel').value;
+  var msg   = document.getElementById('bf-msg-inp').value.trim();
+  var phone = document.getElementById('bf-phone-inp').value.trim();
+
+  // [SEC] Validate each field with strict rules
+  var firstOk = VALIDATORS.name(first);
+  var lastOk  = VALIDATORS.name(last);
+  var emailOk = VALIDATORS.email(email);
+  var svcOk   = ['portrait','editorial','ceremony','lifestyle','other'].indexOf(svc) !== -1;
+  var msgOk   = VALIDATORS.text(msg);
+  var phoneOk = VALIDATORS.phone(phone);
+
+  showBookError('bf-first',   !firstOk);
+  showBookError('bf-last',    !lastOk);
+  showBookError('bf-email',   !emailOk);
+  showBookError('bf-service', !svcOk);
+  showBookError('bf-msg',     !msgOk);
+  if (phone.length > 0) showBookError('bf-phone', !phoneOk);
+
+  if (!firstOk || !lastOk || !emailOk || !svcOk || !msgOk) ok = false;
+  return ok;
+}
+
+['bf-first-inp','bf-last-inp','bf-email-inp','bf-service-sel','bf-msg-inp'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('blur', function() {
+    var container = el.closest('.book-field');
+    if (!container) return;
+    var val = el.value.trim();
+    if (id === 'bf-email-inp') container.classList.toggle('error', !VALIDATORS.email(val));
+    else if (id === 'bf-service-sel') container.classList.toggle('error', !['portrait','editorial','ceremony','lifestyle','other'].includes(val));
+    else container.classList.toggle('error', val.length < 1);
+  });
+  el.addEventListener('input', function() {
+    var container = el.closest('.book-field');
+    if (container && container.classList.contains('error')) {
+      var val = el.value.trim();
+      if (id === 'bf-email-inp') { if (VALIDATORS.email(val)) container.classList.remove('error'); }
+      else { if (val.length > 0) container.classList.remove('error'); }
+    }
+  });
+});
+
+bookForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  /* [SEC] Honeypot check */
+  var hp = bookForm.querySelector('input[name="_gotcha"]');
+  if (hp && hp.value.length > 0) return; // Silent reject for bots
+
+  /* [SEC] Client-side rate limiting — max 3 booking attempts per 10 min */
+  if (!RateLimiter.check('booking', 3, 10 * 60 * 1000)) {
+    var btnText = document.getElementById('book-btn-text');
+    btnText.textContent = 'Too many submissions. Please wait a few minutes.';
+    return;
+  }
+
+  if (!validateBookForm()) return;
+
+  var btn     = document.getElementById('book-submit');
+  var btnText = document.getElementById('book-btn-text');
+  btn.disabled = true;
+  btnText.textContent = 'Sending…';
+
+  fetch(bookForm.action, {
+    method: 'POST',
+    body: new FormData(bookForm),
+    headers: { 'Accept': 'application/json' }
+  }).then(function(res) {
+    if (res.ok) {
+      btnText.textContent = '✓ Request Sent — We\'ll be in touch within 24 hours.';
+      btn.style.borderColor = 'var(--gold)';
+      btn.style.color       = 'var(--gold)';
+      bookForm.reset();
+      positionPhoneLabel();
+      RateLimiter.reset('booking'); // Reset on success
+    } else {
+      btnText.textContent = 'Something went wrong. Please email us directly.';
+      btn.disabled = false;
+    }
+  }).catch(function() {
+    btnText.textContent = 'Network error. Please try again.';
+    btn.disabled = false;
+  });
+});
+
+})();
+</script>
+</body>
+</html>
