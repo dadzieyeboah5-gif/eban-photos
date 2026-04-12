@@ -1754,10 +1754,10 @@ var ALBUMS = {
   editorial: {
     name: 'Editorial & Brand',
     images: [
-      { src: 'images/you.jpg' },
-      { src: 'images/image2.pjg' },
-      { src: 'images/img.jpg' },
-      { src: 'images/image1.jpg' },
+      { src: 'images/you.jpg', caption: '' },
+      { src: 'images/image2.jpg', caption: '' },
+      { src: 'images/img.jpg', caption: '' },
+      { src: 'images/image1.jpg', caption: '' },
       { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&q=85', caption: 'Brand Portrait' },
       { src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200&q=85', caption: 'Campaign' }
     ]
@@ -1870,9 +1870,9 @@ function openAlbum(key) {
     var thumbImg = document.createElement('img');
     var thumbSrc = img.src.replace('w=1200', 'w=400');
     // [SEC] Validate image URL — only allow https://images.unsplash.com
-    if (/^https:\/\/images\.unsplash\.com\//.test(thumbSrc)) {
-      thumbImg.src = thumbSrc;
-    }
+   if (/^(https:\/\/images\.unsplash\.com\/|images\/)/.test(img.src)) {
+  thumbImg.src = thumbSrc;
+}
     thumbImg.alt     = sanitize(img.caption);
     thumbImg.loading = 'lazy';
 
@@ -1928,14 +1928,14 @@ function goTo(idx, instant) {
     lbImg.classList.add('fade');
     setTimeout(function() {
       // [SEC] Validate src before assigning
-      if (/^https:\/\/images\.unsplash\.com\//.test(img.src)) {
+     if (/^(https:\/\/images\.unsplash\.com\/|images\/)/.test(img.src)) {
         lbImg.src = img.src;
       }
       lbImg.alt = sanitize(img.caption);
       lbImg.classList.remove('fade');
     }, 280);
   } else {
-    if (/^https:\/\/images\.unsplash\.com\//.test(img.src)) {
+   if (/^(https:\/\/images\.unsplash\.com\/|images\/)/.test(img.src)) {
       lbImg.src = img.src;
     }
     lbImg.alt = sanitize(img.caption);
@@ -1960,7 +1960,7 @@ function closeLightbox() {
 
 // [SEC] Safe download — validates URL before creating download anchor
 function dlImage(src, name) {
-  if (!/^https:\/\/images\.unsplash\.com\//.test(src)) return;
+ if (!/^(https:\/\/images\.unsplash\.com\/|images\/)/.test(src)) return;
   var a = document.createElement('a');
   a.href     = src;
   a.download = sanitize(name || 'eban-photo');
