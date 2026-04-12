@@ -1063,269 +1063,6 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   .social-icons { flex-direction: column; }
   .payment-methods { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
 }
-
-/* =========================
-   PINTEREST MASONRY + APPLE GALLERY UPGRADE
-   (Appended — overrides original grid layout)
-========================= */
-
-/* ── ALBUM GRID → MASONRY ─────────────────────────────────── */
-.albums-grid {
-  column-count: 3 !important;
-  column-gap: 1.6rem !important;
-  display: block !important;
-  grid-template-columns: unset !important;
-  grid-template-rows: unset !important;
-}
-@media (max-width: 1200px) { .albums-grid { column-count: 2 !important; } }
-@media (max-width: 768px)  { .albums-grid { column-count: 1 !important; } }
-
-.album-card {
-  display: inline-block !important;
-  width: 100% !important;
-  margin-bottom: 1.6rem;
-  break-inside: avoid;
-  transition: transform 0.6s var(--ease-silk), box-shadow 0.6s ease, opacity 0.5s ease;
-}
-
-/* Remove fixed aspect ratio for natural masonry heights */
-.album-card:not(.premium-card) .album-cover {
-  aspect-ratio: unset !important;
-  height: auto !important;
-}
-
-/* Focus-fade: dim siblings on hover */
-.albums-grid:hover .album-card {
-  opacity: 0.65;
-  transform: scale(0.98);
-}
-.albums-grid:hover .album-card:hover {
-  opacity: 1 !important;
-  transform: scale(1.02) translateY(-6px) !important;
-  box-shadow: 0 28px 70px rgba(0,0,0,0.55);
-}
-
-/* Premium card spans full width in masonry */
-.premium-card {
-  column-span: all !important;
-  break-inside: auto;
-}
-
-/* ── LIGHTBOX → PINTEREST MASONRY FEED ────────────────────── */
-
-/* Hide the old stage + strip views (preserved in DOM) */
-.lightbox.pinterest-mode .lb-stage { display: none !important; }
-.lightbox.pinterest-mode .lb-strip { display: none !important; }
-
-/* Transform lb-body into masonry when in pinterest mode */
-.lightbox.pinterest-mode .lb-body {
-  display: block !important;
-  column-count: 4 !important;
-  column-gap: 0.9rem;
-  grid-template-columns: unset !important;
-  padding: 2rem 2.4rem;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(232,217,106,0.15) transparent;
-}
-.lightbox.pinterest-mode .lb-body::-webkit-scrollbar { width: 4px; }
-.lightbox.pinterest-mode .lb-body::-webkit-scrollbar-thumb { background: rgba(232,217,106,0.2); border-radius: 2px; }
-
-@media (max-width: 1200px) { .lightbox.pinterest-mode .lb-body { column-count: 3 !important; } }
-@media (max-width: 768px)  { .lightbox.pinterest-mode .lb-body { column-count: 2 !important; padding: 1.2rem; } }
-@media (max-width: 480px)  { .lightbox.pinterest-mode .lb-body { column-count: 1 !important; } }
-
-/* Masonry image items */
-.lb-pin-item {
-  break-inside: avoid;
-  margin-bottom: 0.9rem;
-  border-radius: 4px;
-  overflow: hidden;
-  cursor: pointer;
-  position: relative;
-  opacity: 0;
-  transform: translateY(30px) scale(0.97);
-  transition: opacity 0.7s var(--ease-expo), transform 0.7s var(--ease-expo);
-}
-.lb-pin-item.show {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-/* Image within masonry item — blur-up effect */
-.lb-pin-item img {
-  width: 100%;
-  display: block;
-  filter: blur(12px) saturate(0.3) brightness(0.7);
-  transform: scale(1.04);
-  transition: filter 0.8s var(--ease-silk), transform 0.8s var(--ease-silk);
-  will-change: filter, transform;
-}
-.lb-pin-item img.loaded {
-  filter: blur(0) saturate(0.85) brightness(0.85);
-  transform: scale(1);
-}
-
-/* Hover on masonry item */
-.lb-pin-item:hover img.loaded {
-  filter: blur(0) saturate(1.1) brightness(1);
-  transform: scale(1.04);
-}
-
-/* Caption overlay on hover */
-.lb-pin-caption {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: 1.2rem 1rem 0.8rem;
-  background: linear-gradient(to top, rgba(5,6,2,0.85) 0%, transparent 100%);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.4s ease, transform 0.4s var(--ease-silk);
-  pointer-events: none;
-}
-.lb-pin-item:hover .lb-pin-caption {
-  opacity: 1;
-  transform: translateY(0);
-}
-.lb-pin-caption span {
-  font-size: 0.62rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--gold);
-  opacity: 0.85;
-}
-
-/* Download icon on masonry item */
-.lb-pin-dl {
-  position: absolute;
-  top: 0.6rem; right: 0.6rem;
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: rgba(5,6,2,0.6);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(232,217,106,0.25);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  opacity: 0;
-  transform: scale(0.8);
-  transition: opacity 0.3s ease, transform 0.3s var(--ease-spring), background 0.3s ease, border-color 0.3s ease;
-}
-.lb-pin-item:hover .lb-pin-dl {
-  opacity: 1;
-  transform: scale(1);
-}
-.lb-pin-dl:hover {
-  background: var(--gold);
-  border-color: var(--gold);
-}
-.lb-pin-dl svg {
-  width: 13px; height: 13px;
-  stroke: var(--gold); fill: none; stroke-width: 2;
-  transition: stroke 0.3s ease;
-}
-.lb-pin-dl:hover svg { stroke: var(--forest); }
-
-/* ── IMMERSIVE FULL-SCREEN IMAGE VIEWER ───────────────────── */
-.image-viewer {
-  position: fixed;
-  inset: 0;
-  background: rgba(3,4,1,0.97);
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.45s var(--ease-silk);
-  cursor: zoom-out;
-}
-.image-viewer.open { opacity: 1; }
-
-.viewer-img {
-  max-width: 94vw;
-  max-height: 94vh;
-  object-fit: contain;
-  transform: scale(0.92);
-  opacity: 0;
-  filter: blur(6px);
-  transition: transform 0.55s var(--ease-expo), opacity 0.5s ease, filter 0.6s var(--ease-silk);
-  will-change: transform, opacity, filter;
-  border: 1px solid rgba(232,217,106,0.04);
-}
-.image-viewer.open .viewer-img {
-  transform: scale(1);
-  opacity: 1;
-  filter: blur(0);
-}
-
-.viewer-close {
-  position: absolute;
-  top: 1.8rem; right: 2.4rem;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.62rem;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  color: var(--gold);
-  cursor: pointer;
-  opacity: 0.55;
-  transition: opacity 0.3s ease, letter-spacing 0.3s var(--ease-silk);
-  z-index: 2;
-  background: none;
-  border: none;
-}
-.viewer-close:hover { opacity: 1; letter-spacing: 0.45em; }
-
-.viewer-counter {
-  position: absolute;
-  bottom: 2rem; left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.56rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--gold);
-  opacity: 0.4;
-}
-
-.viewer-nav {
-  position: absolute;
-  top: 50%; transform: translateY(-50%);
-  width: 48px; height: 48px;
-  background: rgba(232,217,106,0.06);
-  border: 1px solid rgba(232,217,106,0.2);
-  color: var(--gold);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem;
-  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s var(--ease-spring);
-  z-index: 2;
-}
-.viewer-nav:hover { background: rgba(232,217,106,0.14); border-color: var(--gold); }
-.viewer-prev { left: 1.5rem; }
-.viewer-next { right: 1.5rem; }
-.viewer-prev:hover { transform: translateY(-50%) translateX(-3px); }
-.viewer-next:hover { transform: translateY(-50%) translateX(3px); }
-
-.viewer-dl {
-  position: absolute;
-  bottom: 1.8rem; right: 2.2rem;
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.5rem 1.2rem;
-  background: rgba(232,217,106,0.08);
-  border: 1px solid rgba(232,217,106,0.3);
-  color: var(--gold);
-  cursor: pointer;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.56rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-  z-index: 2;
-  text-decoration: none;
-}
-.viewer-dl:hover { background: var(--gold); color: var(--forest); box-shadow: 0 0 22px var(--gold-glow); border-color: var(--gold); }
-.viewer-dl svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
-
 </style>
 </head>
 <body>
@@ -1383,7 +1120,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
     <!-- Album 1: Portraiture -->
     <div class="album-card reveal reveal-d1" data-album="portraiture" tabindex="0" role="button" aria-label="Open Portraiture album">
       <div class="album-img-wrap">
-        <img class="album-cover" src="images/josphine.jpg" alt="Portraiture — Studio &amp; Location Series" loading="lazy">
+        <img class="album-cover" src="images/josphine.jpg" alt="Portraiture — Studio &amp; Location Series">
         <div class="album-layer"></div>
       </div>
       <div class="album-info">
@@ -1399,7 +1136,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
     <!-- Album 2: Editorial -->
     <div class="album-card reveal reveal-d2" data-album="editorial" tabindex="0" role="button" aria-label="Open Editorial album">
       <div class="album-img-wrap">
-        <img class="album-cover" src="images/dadzie.jpg.jpg" alt="Editorial — Natural Light &amp; Urban Frame" loading="lazy">
+        <img class="album-cover" src="images/dadzie.jpg.jpg" alt="Editorial — Natural Light &amp; Urban Frame">
         <div class="album-layer"></div>
       </div>
       <div class="album-info">
@@ -1415,7 +1152,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
     <!-- Album 3: Ceremony -->
     <div class="album-card reveal reveal-d3" data-album="ceremony" tabindex="0" role="button" aria-label="Open Ceremony album">
       <div class="album-img-wrap">
-        <img class="album-cover" src="images/fel.jpg" alt="Ceremony — Documentary Coverage" loading="lazy">
+        <img class="album-cover" src="images/fel.jpg" alt="Ceremony — Documentary Coverage">
         <div class="album-layer"></div>
       </div>
       <div class="album-info">
@@ -1431,7 +1168,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
     <!-- Album 4: Premium -->
     <div class="album-card premium-card reveal reveal-d4" id="premium-card" tabindex="0" role="button" aria-label="Unlock Premium Collection">
       <div class="album-img-wrap" id="premium-img-wrap" style="cursor:pointer;">
-        <img class="album-cover" src="images/yeboah.jpg.jpg" alt="The Intimate Archive — Exclusive Collection" style="aspect-ratio:unset;height:100%;min-height:380px;" loading="lazy">
+        <img class="album-cover" src="images/yeboah.jpg.jpg" alt="The Intimate Archive — Exclusive Collection" style="aspect-ratio:unset;height:100%;min-height:380px;">
         <div class="album-layer"></div>
         <div class="premium-lock-veil" id="premium-lock-veil">
           <div class="lock-ring">
@@ -1492,7 +1229,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
       <button class="lb-btn" id="lb-close">✕ &nbsp;Close</button>
     </div>
   </div>
-  <div class="lb-body" id="lb-body">
+  <div class="lb-body">
     <div class="lb-stage">
       <button class="lb-arrow lb-prev" id="lb-prev" aria-label="Previous photo">&#8592;</button>
       <img class="lb-image" id="lb-img" src="" alt="">
@@ -1832,7 +1569,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
     </div>
   </div>
   <div class="footer-base">
-    <p>&copy; 2026 eban photos. All rights reserved.</p>
+    <p>© 2026 eban photos. All rights reserved.</p>
     <p style="font-style:italic;font-family:'Playfair Display',serif;">Crafted with intention.</p>
   </div>
 </footer>
@@ -2092,13 +1829,8 @@ function updatePayBtn() {
 }
 pmRadios.forEach(function(r) { r.addEventListener('change', updatePayBtn); });
 
-/* ══════════════════════════════════════════════════════════════
-   PINTEREST LIGHTBOX + APPLE IMAGE VIEWER — UPGRADED SYSTEM
-   Replaces openAlbum() internal logic; preserves closeLightbox,
-   goTo, dlImage, and all other original functions.
-   ══════════════════════════════════════════════════════════════ */
+/* ── LIGHTBOX ────────────────────────────────────────────── */
 var lightbox  = document.getElementById('lightbox');
-var lbBody    = document.getElementById('lb-body');
 var lbName    = document.getElementById('lb-name');
 var lbImg     = document.getElementById('lb-img');
 var lbCount   = document.getElementById('lb-count');
@@ -2108,7 +1840,6 @@ var lbFootTxt = document.getElementById('lb-foot-text');
 var currentAlbum = null;
 var currentIdx   = 0;
 
-/* ── UPGRADED openAlbum — Pinterest masonry feed ─────────── */
 function openAlbum(key) {
   // [SEC] Whitelist-validate the album key against ALBUMS object
   if (!ALBUMS.hasOwnProperty(key)) return;
@@ -2124,81 +1855,63 @@ function openAlbum(key) {
   lbName.textContent    = currentAlbum.name;
   lbFootTxt.textContent = currentAlbum.images.length + ' frames in this album';
 
-  // Activate pinterest mode on lightbox
-  lightbox.classList.add('pinterest-mode');
-
-  // Clear existing masonry items from lb-body (but preserve .lb-stage and .lb-strip in DOM)
-  var existingPins = lbBody.querySelectorAll('.lb-pin-item');
-  existingPins.forEach(function(p) { p.remove(); });
-
-  // Also clear thumbs for backwards compat
+  // [SEC] Clear thumbs safely — remove all children
   while (lbThumbs.firstChild) lbThumbs.removeChild(lbThumbs.firstChild);
 
-  // Populate pinterest masonry items
   currentAlbum.images.forEach(function(img, i) {
+    // [SEC] Build DOM nodes with safe helpers, never innerHTML with data
     var item = document.createElement('div');
-    item.className = 'lb-pin-item';
+    item.className = 'strip-thumb' + (i === 0 ? ' active' : '');
     item.setAttribute('tabindex', '0');
     item.setAttribute('role', 'button');
     item.setAttribute('aria-label', 'View ' + sanitize(img.caption));
 
-    // Image with blur-up lazy loading
-    var imgEl = document.createElement('img');
-    imgEl.loading = 'lazy';
-    imgEl.alt = sanitize(img.caption);
+    // Thumbnail image — src validated against expected URL pattern
+    var thumbImg = document.createElement('img');
+    var thumbSrc = img.src.replace('w=1200', 'w=400');
+    // [SEC] Validate image URL — only allow https://images.unsplash.com
+   if (/^(https:\/\/images\.unsplash\.com\/|images\/)/.test(img.src)) {
+  thumbImg.src = thumbSrc;
+}
+    thumbImg.alt     = sanitize(img.caption);
+    thumbImg.loading = 'lazy';
 
-    // [SEC] Validate image URL
-    if (/^(https:\/\/images\.unsplash\.com\/|images\/)/.test(img.src)) {
-      imgEl.src = img.src;
-    }
+    var footer = document.createElement('div');
+    footer.className = 'strip-thumb-footer';
 
-    // Blur-up: add 'loaded' class when image finishes loading
-    imgEl.addEventListener('load', function() {
-      imgEl.classList.add('loaded');
-    });
-    // Handle cached images (already loaded)
-    if (imgEl.complete && imgEl.naturalWidth > 0) {
-      imgEl.classList.add('loaded');
-    }
+    var captionSpan = document.createElement('span');
+    captionSpan.textContent = img.caption; // textContent — safe
 
-    // Caption overlay
-    var caption = document.createElement('div');
-    caption.className = 'lb-pin-caption';
-    var capSpan = document.createElement('span');
-    capSpan.textContent = img.caption;
-    caption.appendChild(capSpan);
-
-    // Download button
-    var dlBtn = document.createElement('div');
-    dlBtn.className = 'lb-pin-dl';
-    dlBtn.setAttribute('role', 'button');
+    // Download button built with safe elements
+    var dlBtn = document.createElement('button');
+    dlBtn.className  = 'strip-dl';
+    dlBtn.type       = 'button';
+    dlBtn.title      = 'Download';
     dlBtn.setAttribute('aria-label', 'Download ' + sanitize(img.caption));
+    // SVG icon — static, not user data
     dlBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
     dlBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       dlImage(img.src, img.caption);
     });
 
-    item.appendChild(imgEl);
-    item.appendChild(caption);
-    item.appendChild(dlBtn);
+    footer.appendChild(captionSpan);
+    footer.appendChild(dlBtn);
+    item.appendChild(thumbImg);
+    item.appendChild(footer);
 
-    // Click to open immersive viewer
     item.addEventListener('click', function(e) {
-      if (e.target.closest('.lb-pin-dl')) return;
-      openImageViewer(i);
+      if (e.target.closest('.strip-dl')) return;
+      goTo(i);
     });
     item.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openImageViewer(i); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goTo(i); }
     });
-
-    lbBody.appendChild(item);
-
-    // Staggered reveal animation
-    setTimeout(function() { item.classList.add('show'); }, 40 + i * 60);
+    lbThumbs.appendChild(item);
   });
 
-  // Show lightbox
+  goTo(0, true);
   lightbox.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   requestAnimationFrame(function() {
@@ -2206,141 +1919,7 @@ function openAlbum(key) {
   });
 }
 
-/* ── IMMERSIVE IMAGE VIEWER (Apple-style) ────────────────── */
-var activeViewer = null;
-
-function openImageViewer(index) {
-  if (!currentAlbum) return;
-  currentIdx = index;
-
-  // Remove existing viewer if any
-  if (activeViewer) { activeViewer.remove(); activeViewer = null; }
-
-  var imgs = currentAlbum.images;
-  var img = imgs[currentIdx];
-
-  var viewer = document.createElement('div');
-  viewer.className = 'image-viewer';
-  viewer.setAttribute('role', 'dialog');
-  viewer.setAttribute('aria-modal', 'true');
-  viewer.setAttribute('aria-label', 'Full screen image viewer');
-
-  // Main image
-  var viewerImg = document.createElement('img');
-  viewerImg.className = 'viewer-img';
-  viewerImg.alt = sanitize(img.caption);
-  if (/^(https:\/\/images\.unsplash\.com\/|images\/)/.test(img.src)) {
-    viewerImg.src = img.src;
-  }
-
-  // Close button
-  var closeBtn = document.createElement('button');
-  closeBtn.className = 'viewer-close';
-  closeBtn.textContent = '\u2715  Close';
-  closeBtn.addEventListener('click', function(e) { e.stopPropagation(); closeImageViewer(); });
-
-  // Counter
-  var counter = document.createElement('div');
-  counter.className = 'viewer-counter';
-  counter.textContent = (currentIdx + 1) + ' / ' + imgs.length;
-
-  // Nav prev
-  var prevBtn = document.createElement('button');
-  prevBtn.className = 'viewer-nav viewer-prev';
-  prevBtn.innerHTML = '&#8592;';
-  prevBtn.setAttribute('aria-label', 'Previous');
-  prevBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    navigateViewer(-1);
-  });
-
-  // Nav next
-  var nextBtn = document.createElement('button');
-  nextBtn.className = 'viewer-nav viewer-next';
-  nextBtn.innerHTML = '&#8594;';
-  nextBtn.setAttribute('aria-label', 'Next');
-  nextBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    navigateViewer(1);
-  });
-
-  // Download
-  var dlBtn = document.createElement('button');
-  dlBtn.className = 'viewer-dl';
-  dlBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download';
-  dlBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    dlImage(img.src, img.caption);
-  });
-
-  viewer.appendChild(viewerImg);
-  viewer.appendChild(closeBtn);
-  viewer.appendChild(counter);
-  viewer.appendChild(prevBtn);
-  viewer.appendChild(nextBtn);
-  viewer.appendChild(dlBtn);
-
-  // Click on backdrop to close
-  viewer.addEventListener('click', function(e) {
-    if (e.target === viewer) closeImageViewer();
-  });
-
-  document.body.appendChild(viewer);
-  activeViewer = viewer;
-
-  requestAnimationFrame(function() {
-    requestAnimationFrame(function() { viewer.classList.add('open'); });
-  });
-}
-
-function navigateViewer(direction) {
-  if (!currentAlbum || !activeViewer) return;
-  var imgs = currentAlbum.images;
-  var newIdx = (currentIdx + direction + imgs.length) % imgs.length;
-  currentIdx = newIdx;
-
-  var viewerImg = activeViewer.querySelector('.viewer-img');
-  var counter = activeViewer.querySelector('.viewer-counter');
-  var dlBtn = activeViewer.querySelector('.viewer-dl');
-  var img = imgs[currentIdx];
-
-  // Smooth transition: fade out, swap, fade in
-  viewerImg.style.opacity = '0';
-  viewerImg.style.transform = 'scale(0.95)';
-
-  setTimeout(function() {
-    if (/^(https:\/\/images\.unsplash\.com\/|images\/)/.test(img.src)) {
-      viewerImg.src = img.src;
-    }
-    viewerImg.alt = sanitize(img.caption);
-    counter.textContent = (currentIdx + 1) + ' / ' + imgs.length;
-
-    // Update download handler
-    var newDl = dlBtn.cloneNode(true);
-    newDl.addEventListener('click', function(e) {
-      e.stopPropagation();
-      dlImage(img.src, img.caption);
-    });
-    dlBtn.parentNode.replaceChild(newDl, dlBtn);
-
-    requestAnimationFrame(function() {
-      viewerImg.style.opacity = '1';
-      viewerImg.style.transform = 'scale(1)';
-    });
-  }, 220);
-}
-
-function closeImageViewer() {
-  if (!activeViewer) return;
-  activeViewer.classList.remove('open');
-  var v = activeViewer;
-  activeViewer = null;
-  setTimeout(function() { if (v.parentNode) v.remove(); }, 450);
-}
-
-/* ── PRESERVED: goTo (kept for backwards compat) ─────────── */
 function goTo(idx, instant) {
-  if (!currentAlbum) return;
   var imgs = currentAlbum.images;
   currentIdx = (idx + imgs.length) % imgs.length;
   var img = imgs[currentIdx];
@@ -2348,6 +1927,7 @@ function goTo(idx, instant) {
   if (!instant) {
     lbImg.classList.add('fade');
     setTimeout(function() {
+      // [SEC] Validate src before assigning
      if (/^(https:\/\/images\.unsplash\.com\/|images\/)/.test(img.src)) {
         lbImg.src = img.src;
       }
@@ -2371,13 +1951,9 @@ function goTo(idx, instant) {
 }
 
 function closeLightbox() {
-  // Close image viewer first if open
-  closeImageViewer();
-
   lightbox.classList.remove('visible');
   setTimeout(function() {
     lightbox.style.display = 'none';
-    lightbox.classList.remove('pinterest-mode');
     document.body.style.overflow = '';
   }, 400);
 }
@@ -2410,13 +1986,6 @@ document.getElementById('lb-prev').addEventListener('click', function() { goTo(c
 document.getElementById('lb-next').addEventListener('click', function() { goTo(currentIdx + 1); });
 lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeLightbox(); });
 document.addEventListener('keydown', function(e) {
-  // Image viewer takes priority if open
-  if (activeViewer) {
-    if (e.key === 'Escape')     closeImageViewer();
-    if (e.key === 'ArrowLeft')  navigateViewer(-1);
-    if (e.key === 'ArrowRight') navigateViewer(1);
-    return;
-  }
   if (lightbox.style.display !== 'flex') return;
   if (e.key === 'Escape')     closeLightbox();
   if (e.key === 'ArrowLeft')  goTo(currentIdx - 1);
@@ -2663,7 +2232,7 @@ function applyUnlockedUI() {
     // [SEC] Use textContent for dynamic button label
     while (unlockBtn0.firstChild) unlockBtn0.removeChild(unlockBtn0.firstChild);
     var checkSpan = document.createElement('span');
-    checkSpan.textContent = '\u2713 Unlocked — Click to View';
+    checkSpan.textContent = '✓ Unlocked — Click to View';
     unlockBtn0.appendChild(checkSpan);
   }
 }
@@ -2793,7 +2362,7 @@ bookForm.addEventListener('submit', function(e) {
     headers: { 'Accept': 'application/json' }
   }).then(function(res) {
     if (res.ok) {
-      btnText.textContent = '\u2713 Request Sent — We\'ll be in touch within 24 hours.';
+      btnText.textContent = '✓ Request Sent — We\'ll be in touch within 24 hours.';
       btn.style.borderColor = 'var(--gold)';
       btn.style.color       = 'var(--gold)';
       bookForm.reset();
