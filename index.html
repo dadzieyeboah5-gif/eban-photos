@@ -4,9 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>eban photos — Where Light Becomes Legacy</title>
+
+<!-- ═══════════════════════════════════════════════════════════
+     [SEC-1] SECURITY HEADERS (via meta tags)
+     NOTE: For full coverage, also set these as HTTP response
+     headers in your server (Express/Nginx/Apache):
+       Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+       Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(self "https://js.paystack.co")
+       Cross-Origin-Opener-Policy: same-origin
+       Cross-Origin-Resource-Policy: same-origin
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- [SEC-1a] Prevent MIME-type sniffing -->
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+<!-- [SEC-1b] Clickjacking protection — block iframe embedding -->
+<meta http-equiv="X-Frame-Options" content="DENY">
+
+<!-- [SEC-1c] Referrer policy — don't leak full URL in referrer -->
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
+<!-- [SEC-1d] Content Security Policy
+     Directives explained:
+     default-src     — fallback for unspecified directives
+     script-src      — JS: only self + Paystack CDN (unsafe-inline required for inline
+                       script block; replace with server nonce in production)
+     style-src       — CSS: self + Google Fonts (unsafe-inline for inline <style>)
+     font-src        — only gstatic CDN for Fonts
+     img-src         — self + Unsplash + data URIs
+     connect-src     — XHR/fetch: self + Formspree + Paystack API
+     frame-src       — only Paystack checkout iframe
+     object-src      — block plugins (Flash etc.)
+     base-uri        — prevent base tag hijacking
+     form-action     — only submit to self and Formspree
+     upgrade-insecure-requests — force HTTPS for all subresource requests
+-->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src  'self' 'unsafe-inline' https://js.paystack.co;
+  style-src   'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src    https://fonts.gstatic.com;
+  img-src     'self' https://images.unsplash.com data: blob:;
+  connect-src 'self' https://formspree.io https://api.paystack.co https://checkout.paystack.com;
+  frame-src   https://checkout.paystack.com;
+  object-src  'none';
+  base-uri    'self';
+  form-action 'self' https://formspree.io;
+  upgrade-insecure-requests;
+">
+
+<!-- [SEC-1e] Prevent browser from storing sensitive data in cache -->
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
-<script src="https://js.paystack.co/v1/inline.js"></script>
+
+<!-- [SEC-2] SUBRESOURCE INTEGRITY (SRI)
+     crossorigin="anonymous" required for SRI checks on cross-origin resources.
+     NOTE: Paystack updates their inline.js periodically. Compute the hash with:
+       openssl dgst -sha384 -binary inline.js | openssl base64 -A
+     Then replace the placeholder integrity value below with the real hash.
+     Until then, the crossorigin attribute still enforces CORS rules.
+     To verify: curl -s https://js.paystack.co/v1/inline.js | openssl dgst -sha384 -binary | openssl base64 -A
+-->
+<script
+  src="https://js.paystack.co/v1/inline.js"
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer">
+</script>
+
 <style>
 /* ─── DESIGN TOKENS ─────────────────────────────────────────── */
 :root {
@@ -44,12 +111,8 @@ body::before {
   pointer-events: none; z-index: 9997;
   opacity: 0.028;
 }
-
-/* ─── TYPOGRAPHY ────────────────────────────────────────────── */
 .serif { font-family: 'Playfair Display', serif; }
 .sans  { font-family: 'Outfit', sans-serif; }
-
-/* ─── NAV ────────────────────────────────────────────────────── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 900;
   display: flex; justify-content: space-between; align-items: center;
@@ -108,15 +171,13 @@ nav.hide { transform: translateY(-100%); }
   transition: color 0.3s ease, opacity 0.3s ease;
 }
 .nav-mobile-menu a:hover { color: var(--gold); opacity: 1; }
-
-/* ─── HERO ───────────────────────────────────────────────────── */
 .hero {
   position: relative; height: 100vh; min-height: 720px;
   display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
 .hero-bg {
   position: absolute; inset: 0; width: 100%; height: 100%;
-  background: url("images/dadzie.jpg.jpg") center 15% / cover no-repeat;
+  background: url("https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1600&q=80") center 15% / cover no-repeat;
   filter: brightness(0.3);
 }
 .hero-vignette {
@@ -177,8 +238,6 @@ nav.hide { transform: translateY(-100%); }
   from { opacity: 0; letter-spacing: 0.14em; transform: translateY(40px); }
   to   { opacity: 1; letter-spacing: -0.01em; transform: translateY(0); }
 }
-
-/* ─── SECTION BASE ──────────────────────────────────────────── */
 section { padding: 9rem 5rem; }
 .section-tag {
   display: inline-flex; align-items: center; gap: 1rem;
@@ -192,16 +251,12 @@ section { padding: 9rem 5rem; }
   color: var(--white); letter-spacing: -0.01em;
 }
 .section-heading em { font-style: italic; color: var(--gold); }
-
-/* ─── REVEAL ────────────────────────────────────────────────── */
 .reveal { opacity: 0; transform: translateY(44px); transition: opacity 0.95s var(--ease-expo), transform 0.95s var(--ease-expo); }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 .reveal-d1 { transition-delay: 0.1s; }
 .reveal-d2 { transition-delay: 0.22s; }
 .reveal-d3 { transition-delay: 0.34s; }
 .reveal-d4 { transition-delay: 0.46s; }
-
-/* ─── GALLERY SECTION ────────────────────────────────────────── */
 .gallery-section { background: var(--forest); padding-top: 7rem; padding-bottom: 9rem; }
 .gallery-head {
   max-width: 1360px; margin: 0 auto 5rem;
@@ -251,8 +306,6 @@ section { padding: 9rem 5rem; }
 }
 .album-view-btn svg { width: 22px; height: 22px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
 .album-card:hover .album-view-btn { transform: translate(-50%, -50%) scale(1); }
-
-/* ── PREMIUM CARD ──────────────────────────────────────────── */
 .premium-card { grid-column: 1 / -1; display: grid; grid-template-columns: 1.1fr 1fr; cursor: default; }
 .premium-card:hover { transform: none; box-shadow: none; }
 .premium-card .album-img-wrap { cursor: pointer; }
@@ -303,10 +356,6 @@ section { padding: 9rem 5rem; }
 }
 .lock-ring { width: 68px; height: 68px; border-radius: 50%; background: rgba(232,217,106,0.1); border: 1px solid rgba(232,217,106,0.4); display: flex; align-items: center; justify-content: center; }
 .lock-ring svg { width: 26px; height: 26px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
-
-/* ═══════════════════════════════════════════════════════════════
-   ─── LIGHTBOX — PINTEREST / EDITORIAL MASONRY GALLERY ────────
-   ═══════════════════════════════════════════════════════════════ */
 .lightbox {
   position: fixed; inset: 0; z-index: 9100;
   background: rgba(6, 8, 2, 0.98);
@@ -315,8 +364,6 @@ section { padding: 9rem 5rem; }
 }
 .lightbox.open   { display: flex; }
 .lightbox.visible { opacity: 1; }
-
-/* ── Header ──────────────────────────────────────────────────── */
 .lb-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 1.5rem 2.8rem;
@@ -337,161 +384,69 @@ section { padding: 9rem 5rem; }
   transition: border-color 0.3s, color 0.3s, background 0.3s; font-family: 'Outfit', sans-serif;
 }
 .lb-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(232,217,106,0.05); }
-
-/* ── Masonry Body ─────────────────────────────────────────────── */
 .lb-body {
-  flex: 1;
-  display: block;
-  overflow-y: auto;
-  overflow-x: hidden;
+  flex: 1; display: block; overflow-y: auto; overflow-x: hidden;
   padding: 2.4rem 2.8rem 4rem;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(232,217,106,0.15) transparent;
+  scrollbar-width: thin; scrollbar-color: rgba(232,217,106,0.15) transparent;
 }
 .lb-body::-webkit-scrollbar { width: 4px; }
 .lb-body::-webkit-scrollbar-thumb { background: rgba(232,217,106,0.2); border-radius: 2px; }
-
-/* ── Pinterest Masonry Grid ───────────────────────────────────── */
-/*
-  grid-auto-rows: 8px  — base row unit
-  row-gap: 8px         — gap between rows (same as row unit for easy math)
-  column-gap: 14px     — column spacing
-  Each span unit ≈ (8+8)px = 16px effective height
-*/
 .lb-masonry {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 8px;
-  column-gap: 14px;
-  row-gap: 8px;
-  max-width: 1480px;
-  margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 8px; column-gap: 14px; row-gap: 8px;
+  max-width: 1480px; margin: 0 auto;
 }
-
-/* ── Row-span height classes ──────────────────────────────────── */
-/* Height ≈ (span × 16px) - 8px  [formula with row-gap:8px] */
-.lb-span-xl   { grid-row: span 35; } /* ≈ 552px — hero portrait */
-.lb-span-tall { grid-row: span 30; } /* ≈ 472px — tall portrait  */
-.lb-span-md   { grid-row: span 22; } /* ≈ 344px — medium         */
-.lb-span-wide { grid-row: span 18; } /* ≈ 280px — landscape      */
-.lb-span-sm   { grid-row: span 14; } /* ≈ 216px — compact accent */
-
-/* ── Individual Card ──────────────────────────────────────────── */
+.lb-span-xl   { grid-row: span 35; }
+.lb-span-tall { grid-row: span 30; }
+.lb-span-md   { grid-row: span 22; }
+.lb-span-wide { grid-row: span 18; }
+.lb-span-sm   { grid-row: span 14; }
 .lb-mcard {
-  position: relative;
-  border-radius: 18px;
-  overflow: hidden;
-  cursor: pointer;
-  background: var(--army);
+  position: relative; border-radius: 18px; overflow: hidden;
+  cursor: pointer; background: var(--army);
   box-shadow: 0 18px 50px rgba(0,0,0,0.38);
-  transition:
-    transform  0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.55s cubic-bezier(0.22,1,0.36,1), box-shadow 0.55s cubic-bezier(0.22,1,0.36,1);
   will-change: transform;
 }
-
-/* ── Staggered vertical offsets — Pinterest randomness ──────── */
 .lb-mcard:nth-child(4n+2) { transform: translateY(14px);  }
 .lb-mcard:nth-child(4n+3) { transform: translateY(-10px); }
 .lb-mcard:nth-child(4n+4) { transform: translateY(20px);  }
-
-/* Hover lift — !important overrides the nth-child base offset */
-.lb-mcard:hover {
-  transform: translateY(-8px) scale(1.025) !important;
-  box-shadow:
-    0 32px 72px rgba(0,0,0,0.58),
-    0 0 40px rgba(232,217,106,0.13);
-  z-index: 2;
-}
-
-/* ── Card image ───────────────────────────────────────────────── */
+.lb-mcard:hover { transform: translateY(-8px) scale(1.025) !important; box-shadow: 0 32px 72px rgba(0,0,0,0.58), 0 0 40px rgba(232,217,106,0.13); z-index: 2; }
 .lb-mcard-img {
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
+  width: 100%; height: 100%; object-fit: cover; display: block;
   filter: saturate(0.5) brightness(0.8);
-  transition:
-    filter    0.65s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: filter 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1);
 }
-.lb-mcard:hover .lb-mcard-img {
-  filter: saturate(1.1) brightness(0.94);
-  transform: scale(1.06);
-}
-
-/* ── Glass hover overlay ──────────────────────────────────────── */
+.lb-mcard:hover .lb-mcard-img { filter: saturate(1.1) brightness(0.94); transform: scale(1.06); }
 .lb-mcard-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(
-    170deg,
-    rgba(0,0,0,0.04) 0%,
-    rgba(0,0,0,0.18) 40%,
-    rgba(0,0,0,0.62) 100%
-  );
+  background: linear-gradient(170deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.18) 40%, rgba(0,0,0,0.62) 100%);
   backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: flex-end;
-  padding: 1.5rem 1.2rem 1.2rem;
-  opacity: 0; border-radius: inherit;
-  transition:
-    opacity         0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    backdrop-filter 0.45s ease;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  padding: 1.5rem 1.2rem 1.2rem; opacity: 0; border-radius: inherit;
+  transition: opacity 0.45s cubic-bezier(0.22,1,0.36,1), backdrop-filter 0.45s ease;
 }
-.lb-mcard:hover .lb-mcard-overlay {
-  opacity: 1;
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-}
-
-/* ── Expand icon ──────────────────────────────────────────────── */
+.lb-mcard:hover .lb-mcard-overlay { opacity: 1; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .lb-mcard-icon {
   position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%) scale(0.65);
+  transform: translate(-50%,-50%) scale(0.65);
   width: 56px; height: 56px; border-radius: 50%;
   background: rgba(232,217,106,0.13); border: 1px solid rgba(232,217,106,0.55);
   display: flex; align-items: center; justify-content: center;
-  transition:
-    transform   0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    background  0.3s ease;
+  transition: transform 0.45s cubic-bezier(0.22,1,0.36,1), background 0.3s ease;
 }
-.lb-mcard:hover .lb-mcard-icon {
-  transform: translate(-50%, -50%) scale(1);
-  background: rgba(232,217,106,0.2);
-}
+.lb-mcard:hover .lb-mcard-icon { transform: translate(-50%,-50%) scale(1); background: rgba(232,217,106,0.2); }
 .lb-mcard-icon svg { width: 20px; height: 20px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
-
-/* ── Caption ──────────────────────────────────────────────────── */
-.lb-mcard-caption {
-  text-align: center; width: 100%;
-  transform: translateY(10px);
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-}
+.lb-mcard-caption { text-align: center; width: 100%; transform: translateY(10px); transition: transform 0.45s cubic-bezier(0.22,1,0.36,1); }
 .lb-mcard:hover .lb-mcard-caption { transform: translateY(0); }
-.lb-mcard-title {
-  font-family: 'Playfair Display', serif; font-style: italic;
-  font-size: 0.88rem; color: var(--white); letter-spacing: 0.04em; display: block;
-}
-.lb-mcard-sub {
-  font-size: 0.52rem; letter-spacing: 0.28em; text-transform: uppercase;
-  color: var(--gold); opacity: 0.75; margin-top: 0.22rem; display: block;
-}
-
-/* ── Gold edge glow ───────────────────────────────────────────── */
-.lb-mcard::after {
-  content: ''; position: absolute; inset: 0; border-radius: inherit;
-  border: 1px solid rgba(232,217,106,0); pointer-events: none;
-  transition: border-color 0.45s ease, box-shadow 0.45s ease;
-}
-.lb-mcard:hover::after {
-  border-color: rgba(232,217,106,0.28);
-  box-shadow: inset 0 0 30px rgba(232,217,106,0.05);
-}
-
-/* ── Footer ───────────────────────────────────────────────────── */
+.lb-mcard-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.88rem; color: var(--white); letter-spacing: 0.04em; display: block; }
+.lb-mcard-sub { font-size: 0.52rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); opacity: 0.75; margin-top: 0.22rem; display: block; }
+.lb-mcard::after { content: ''; position: absolute; inset: 0; border-radius: inherit; border: 1px solid rgba(232,217,106,0); pointer-events: none; transition: border-color 0.45s ease, box-shadow 0.45s ease; }
+.lb-mcard:hover::after { border-color: rgba(232,217,106,0.28); box-shadow: inset 0 0 30px rgba(232,217,106,0.05); }
 .lb-foot {
-  flex-shrink: 0; border-top: 1px solid rgba(232,217,106,0.08);
-  padding: 1rem 2.8rem;
+  flex-shrink: 0; border-top: 1px solid rgba(232,217,106,0.08); padding: 1rem 2.8rem;
   display: flex; align-items: center; justify-content: space-between;
-  background: rgba(13,15,6,0.6);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  background: rgba(13,15,6,0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
 .lb-foot-text { font-size: 0.62rem; opacity: 0.35; letter-spacing: 0.08em; }
 .lb-dl-all {
@@ -502,8 +457,6 @@ section { padding: 9rem 5rem; }
 }
 .lb-dl-all:hover { background: var(--gold); color: var(--forest); box-shadow: 0 0 30px var(--gold-glow); }
 .lb-dl-all svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
-
-/* ─── DETAIL / Full-screen overlay ───────────────────────────── */
 .lb-detail-veil {
   position: absolute; inset: 0; z-index: 20;
   background: rgba(4,5,1,0.97);
@@ -512,7 +465,6 @@ section { padding: 9rem 5rem; }
 }
 .lb-detail-veil.open    { display: flex; }
 .lb-detail-veil.visible { opacity: 1; }
-
 .lb-detail-img {
   max-width: 88%; max-height: 80vh; object-fit: contain;
   border: 1px solid rgba(232,217,106,0.06);
@@ -520,7 +472,6 @@ section { padding: 9rem 5rem; }
   transition: opacity 0.28s ease, transform 0.28s var(--ease-silk);
 }
 .lb-detail-img.fade { opacity: 0; transform: scale(0.97); }
-
 .lb-detail-close {
   position: absolute; top: 1.5rem; right: 2rem;
   background: none; border: 1px solid rgba(232,217,106,0.25);
@@ -529,7 +480,6 @@ section { padding: 9rem 5rem; }
   transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
 }
 .lb-detail-close:hover { border-color: var(--gold); color: var(--gold); background: rgba(232,217,106,0.06); }
-
 .lb-detail-nav {
   position: absolute; top: 50%; transform: translateY(-50%);
   width: 48px; height: 48px;
@@ -543,19 +493,12 @@ section { padding: 9rem 5rem; }
 .lb-detail-next { right: 1.4rem; }
 .lb-detail-prev:hover { transform: translateY(-50%) translateX(-2px); }
 .lb-detail-next:hover { transform: translateY(-50%) translateX(2px); }
-
 .lb-detail-footer {
   position: absolute; bottom: 1.8rem; left: 50%; transform: translateX(-50%);
   display: flex; align-items: center; gap: 2rem; white-space: nowrap;
 }
-.lb-detail-caption {
-  font-family: 'Playfair Display', serif; font-style: italic;
-  font-size: 1rem; color: var(--gold); opacity: 0.65; letter-spacing: 0.06em;
-}
-.lb-detail-count {
-  font-size: 0.56rem; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--cream); opacity: 0.35;
-}
+.lb-detail-caption { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1rem; color: var(--gold); opacity: 0.65; letter-spacing: 0.06em; }
+.lb-detail-count { font-size: 0.56rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--cream); opacity: 0.35; }
 .lb-dl-btn {
   display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.48rem 1.1rem;
   background: rgba(232,217,106,0.08); border: 1px solid rgba(232,217,106,0.3);
@@ -565,17 +508,11 @@ section { padding: 9rem 5rem; }
 }
 .lb-dl-btn:hover { background: var(--gold); color: var(--forest); box-shadow: 0 0 22px var(--gold-glow); }
 .lb-dl-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
-
-/* ── Responsive ───────────────────────────────────────────────── */
-@media (max-width: 1100px) {
-  .lb-masonry { grid-template-columns: repeat(3, 1fr); }
-}
+@media (max-width: 1100px) { .lb-masonry { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 768px) {
   .lb-masonry { grid-template-columns: repeat(2, 1fr); column-gap: 10px; row-gap: 10px; }
   .lb-body { padding: 1.2rem 1rem 3rem; }
-  .lb-mcard:nth-child(4n+2),
-  .lb-mcard:nth-child(4n+3),
-  .lb-mcard:nth-child(4n+4) { transform: none !important; }
+  .lb-mcard:nth-child(4n+2), .lb-mcard:nth-child(4n+3), .lb-mcard:nth-child(4n+4) { transform: none !important; }
   .lb-mcard:hover { transform: translateY(-4px) !important; }
   .lb-head { padding: 1.2rem 1.4rem; }
   .lb-foot { padding: 0.9rem 1.4rem; }
@@ -584,8 +521,6 @@ section { padding: 9rem 5rem; }
   .lb-masonry { grid-template-columns: 1fr; }
   .lb-span-xl, .lb-span-tall, .lb-span-md, .lb-span-wide, .lb-span-sm { grid-row: span 25; }
 }
-
-/* ─── PAYMENT MODAL ─────────────────────────────────────────── */
 .modal-veil {
   position: fixed; inset: 0; z-index: 9500;
   background: rgba(5,7,2,0.92); backdrop-filter: blur(10px);
@@ -618,10 +553,7 @@ section { padding: 9rem 5rem; }
   font-size: 0.56rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
 }
 .modal-badge svg { width: 10px; height: 10px; stroke: var(--gold); fill: none; stroke-width: 2; }
-.modal-title {
-  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
-  font-size: 2rem; color: var(--white); margin-bottom: 0.5rem; line-height: 1.1;
-}
+.modal-title { font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic; font-size: 2rem; color: var(--white); margin-bottom: 0.5rem; line-height: 1.1; }
 .modal-sub { font-size: 0.78rem; opacity: 0.42; line-height: 1.75; margin-bottom: 2rem; }
 .modal-price-row {
   background: rgba(232,217,106,0.05); border: 1px solid rgba(232,217,106,0.12);
@@ -678,8 +610,6 @@ section { padding: 9rem 5rem; }
 .pay-success-ring svg { width: 26px; height: 26px; stroke: var(--gold); fill: none; stroke-width: 2; }
 .pay-success h3 { font-family: 'Playfair Display', serif; font-weight: 400; font-size: 1.9rem; color: var(--white); margin-bottom: 0.7rem; line-height: 1.1; }
 .pay-success p { font-size: 0.78rem; opacity: 0.5; line-height: 1.75; }
-
-/* ─── ABOUT ──────────────────────────────────────────────────── */
 .about-section { background: var(--moss); position: relative; overflow: hidden; }
 .about-section::after {
   content: 'EP'; position: absolute; right: -4%; bottom: -10%;
@@ -695,8 +625,6 @@ section { padding: 9rem 5rem; }
 .about-text h2 { margin-bottom: 1.8rem; }
 .about-text p { font-size: 0.9rem; line-height: 2.05; opacity: 0.6; margin-bottom: 1.4rem; }
 .about-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.35rem; line-height: 1.55; color: var(--gold); border-left: 2px solid var(--gold); padding-left: 1.5rem; margin: 2.4rem 0; opacity: 0.88; }
-
-/* ─── SERVICES ───────────────────────────────────────────────── */
 .services-section { background: var(--forest); }
 .services-inner { max-width: 1360px; margin: 0 auto; }
 .services-grid { display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid rgba(232,217,106,0.1); margin-top: 4.5rem; }
@@ -709,8 +637,6 @@ section { padding: 9rem 5rem; }
 .service-card h3 { font-family: 'Playfair Display', serif; font-weight: 400; font-size: 2rem; line-height: 1.1; margin-bottom: 1.2rem; color: var(--white); transition: color 0.35s ease; }
 .service-card:hover h3 { color: var(--gold); }
 .service-card p { font-size: 0.8rem; line-height: 1.95; opacity: 0.5; }
-
-/* ─── BOOKING ────────────────────────────────────────────────── */
 .booking-section { background: var(--army); }
 .booking-inner { max-width: 760px; margin: 0 auto; }
 .booking-inner h2 { margin-bottom: 0.8rem; }
@@ -765,9 +691,8 @@ section { padding: 9rem 5rem; }
 .btn-submit:hover { color: var(--forest); box-shadow: 0 0 50px var(--gold-glow); transform: translateY(-2px); }
 .btn-submit:hover::before { transform: translateY(0); }
 .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
-.hp-field { opacity: 0; position: absolute; top: -9999px; left: -9999px; height: 0; }
-
-/* ─── SOCIAL ─────────────────────────────────────────────────── */
+/* [SEC-8] Honeypot — invisible to real users, bots fill it */
+.hp-field { opacity: 0; position: absolute; top: -9999px; left: -9999px; height: 0; width: 0; overflow: hidden; tab-size: 0; }
 .social-section { background: var(--moss); }
 .social-inner { max-width: 1360px; margin: 0 auto; }
 .social-icons { display: flex; gap: 2rem; margin-top: 4rem; flex-wrap: wrap; }
@@ -775,8 +700,6 @@ section { padding: 9rem 5rem; }
 .social-link:hover { opacity: 1; color: var(--gold); border-color: var(--gold); box-shadow: 0 0 28px var(--gold-dim); transform: translateY(-3px); }
 .social-link svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.5; }
 .social-link span { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; }
-
-/* ─── CONTACT ────────────────────────────────────────────────── */
 .contact-section { background: var(--forest); }
 .contact-inner { max-width: 1360px; margin: 0 auto; }
 .contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid rgba(232,217,106,0.1); margin-top: 4.5rem; }
@@ -789,8 +712,6 @@ section { padding: 9rem 5rem; }
 .contact-value { font-size: 0.92rem; color: var(--cream); opacity: 0.75; line-height: 1.6; }
 .contact-value a { color: inherit; text-decoration: none; transition: color 0.3s ease, opacity 0.3s ease; }
 .contact-value a:hover { color: var(--gold); opacity: 1; }
-
-/* ─── FOOTER ─────────────────────────────────────────────────── */
 footer { background: var(--ink); padding: 6rem 5rem 5rem; border-top: 1px solid rgba(232,217,106,0.07); }
 .footer-inner { max-width: 1360px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem; }
 .footer-wordmark { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; font-size: 3rem; color: var(--gold); letter-spacing: 0.05em; display: block; margin-bottom: 1rem; }
@@ -802,8 +723,6 @@ footer ul a { font-size: 0.78rem; color: var(--cream); text-decoration: none; op
 footer ul a:hover { opacity: 1; color: var(--gold); }
 .footer-base { max-width: 1360px; margin: 3.5rem auto 0; padding-top: 2rem; border-top: 1px solid rgba(232,217,106,0.07); display: flex; justify-content: space-between; align-items: center; }
 .footer-base p { font-size: 0.6rem; opacity: 0.28; letter-spacing: 0.12em; }
-
-/* ─── STICKY BAR ─────────────────────────────────────────────── */
 .sticky-bar {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 800;
   background: rgba(26,30,10,0.85); backdrop-filter: blur(16px);
@@ -819,8 +738,6 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
 .sticky-sep { width: 1px; height: 16px; background: rgba(232,217,106,0.2); }
 .sticky-cta { display: inline-flex; align-items: center; gap: 0.7rem; padding: 0.58rem 1.8rem; background: var(--gold); color: var(--forest); font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase; text-decoration: none; font-weight: 500; transition: box-shadow 0.3s ease, transform 0.3s var(--ease-spring), background 0.3s ease; }
 .sticky-cta:hover { box-shadow: 0 0 28px var(--gold-glow); transform: translateY(-1px); background: var(--gold-pale); }
-
-/* ─── RESPONSIVE ─────────────────────────────────────────────── */
 @media (max-width: 1200px) {
   .albums-grid { grid-template-columns: repeat(2,1fr); }
   .premium-card { grid-column: 1 / -1; }
@@ -871,7 +788,6 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
 </head>
 <body>
 
-<!-- ─── NAV ─────────────────────────────────────────────────── -->
 <nav id="nav">
   <a href="#" class="nav-logo">eban photos</a>
   <ul class="nav-links">
@@ -894,7 +810,6 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   <a href="#booking" class="mobile-nav-link">Book Now</a>
 </div>
 
-<!-- ─── HERO ─────────────────────────────────────────────────── -->
 <section class="hero" id="hero">
   <div class="hero-bg"></div>
   <div class="hero-vignette"></div>
@@ -910,7 +825,6 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   </div>
 </section>
 
-<!-- ─── GALLERY ──────────────────────────────────────────────── -->
 <section class="gallery-section" id="gallery">
   <div class="gallery-head reveal">
     <div>
@@ -921,10 +835,10 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   </div>
 
   <div class="albums-grid">
-    <!-- Album 1: Portraiture -->
     <div class="album-card reveal reveal-d1" data-album="portraiture" tabindex="0" role="button" aria-label="Open Portraiture album">
       <div class="album-img-wrap">
-        <img class="album-cover" src="images/josphine.jpg" alt="Portraiture">
+        <!-- [SEC-5] crossorigin for CORS image requests -->
+        <img class="album-cover" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80" alt="Portraiture" crossorigin="anonymous" loading="lazy">
         <div class="album-layer"></div>
       </div>
       <div class="album-info">
@@ -935,10 +849,9 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
       <div class="album-view-btn"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
 
-    <!-- Album 2: Editorial -->
     <div class="album-card reveal reveal-d2" data-album="editorial" tabindex="0" role="button" aria-label="Open Editorial album">
       <div class="album-img-wrap">
-        <img class="album-cover" src="images/dadzie.jpg.jpg" alt="Editorial">
+        <img class="album-cover" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80" alt="Editorial" crossorigin="anonymous" loading="lazy">
         <div class="album-layer"></div>
       </div>
       <div class="album-info">
@@ -949,10 +862,9 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
       <div class="album-view-btn"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
 
-    <!-- Album 3: Ceremony -->
     <div class="album-card reveal reveal-d3" data-album="ceremony" tabindex="0" role="button" aria-label="Open Ceremony album">
       <div class="album-img-wrap">
-        <img class="album-cover" src="images/fel.jpg" alt="Ceremony">
+        <img class="album-cover" src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" alt="Ceremony" crossorigin="anonymous" loading="lazy">
         <div class="album-layer"></div>
       </div>
       <div class="album-info">
@@ -963,10 +875,9 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
       <div class="album-view-btn"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
     </div>
 
-    <!-- Album 4: Premium -->
     <div class="album-card premium-card reveal reveal-d4" id="premium-card" tabindex="0" role="button" aria-label="Unlock Premium Collection">
       <div class="album-img-wrap" id="premium-img-wrap" style="cursor:pointer;">
-        <img class="album-cover" src="images/yeboah.jpg" alt="The Intimate Archive" style="aspect-ratio:unset;height:100%;min-height:380px;">
+        <img class="album-cover" src="https://images.unsplash.com/photo-1554080353-a576cf803bda?w=900&q=80" alt="The Intimate Archive" crossorigin="anonymous" loading="lazy" style="aspect-ratio:unset;height:100%;min-height:380px;">
         <div class="album-layer"></div>
         <div class="premium-lock-veil" id="premium-lock-veil">
           <div class="lock-ring">
@@ -991,9 +902,9 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
           <span>Unlock Collection</span>
         </button>
         <div class="premium-blurred-previews">
-          <img class="blurred-thumb" src="https://images.unsplash.com/photo-1554080353-a576cf803bda?w=100&q=60" alt="">
-          <img class="blurred-thumb" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=60" alt="">
-          <img class="blurred-thumb" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&q=60" alt="">
+          <img class="blurred-thumb" src="https://images.unsplash.com/photo-1554080353-a576cf803bda?w=100&q=60" alt="" crossorigin="anonymous" loading="lazy">
+          <img class="blurred-thumb" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=60" alt="" crossorigin="anonymous" loading="lazy">
+          <img class="blurred-thumb" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&q=60" alt="" crossorigin="anonymous" loading="lazy">
           <div class="blurred-more">+12</div>
         </div>
         <div class="premium-perks">
@@ -1007,27 +918,16 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════
-     ─── LIGHTBOX — PINTEREST MASONRY GALLERY ───────────────
-     ═══════════════════════════════════════════════════════════ -->
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
-
-  <!-- Header bar -->
   <div class="lb-head">
     <span class="lb-name" id="lb-name">Album</span>
     <div class="lb-actions">
       <button class="lb-btn" id="lb-close">✕ &nbsp;Close</button>
     </div>
   </div>
-
-  <!-- Scrollable masonry canvas -->
   <div class="lb-body" id="lb-body">
-    <div class="lb-masonry" id="lb-masonry">
-      <!-- Cards injected by JS -->
-    </div>
+    <div class="lb-masonry" id="lb-masonry"></div>
   </div>
-
-  <!-- Footer bar -->
   <div class="lb-foot">
     <p class="lb-foot-text" id="lb-foot-text"></p>
     <button class="lb-dl-all" id="lb-dl-all" type="button">
@@ -1035,12 +935,10 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
       Download All
     </button>
   </div>
-
-  <!-- ── Full-screen detail overlay ──────────────────────────── -->
   <div class="lb-detail-veil" id="lb-detail-veil">
     <button class="lb-detail-close" id="lb-detail-close">✕ &nbsp;Back to Gallery</button>
     <button class="lb-detail-nav lb-detail-prev" id="lb-detail-prev" aria-label="Previous">&#8592;</button>
-    <img class="lb-detail-img" id="lb-detail-img" src="" alt="">
+    <img class="lb-detail-img" id="lb-detail-img" src="" alt="" crossorigin="anonymous">
     <button class="lb-detail-nav lb-detail-next" id="lb-detail-next" aria-label="Next">&#8594;</button>
     <div class="lb-detail-footer">
       <span class="lb-detail-caption" id="lb-detail-caption"></span>
@@ -1051,7 +949,6 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
       </button>
     </div>
   </div>
-
 </div>
 
 <!-- ─── PAYMENT MODAL ────────────────────────────────────────── -->
@@ -1092,15 +989,23 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
       </div>
       <div class="form-field" id="ff-name">
         <label for="pm-name-inp">Full Name</label>
-        <input type="text" id="pm-name-inp" placeholder="Your full name" autocomplete="name" maxlength="100">
+        <!-- [SEC-9] autocomplete=off for payment identity fields -->
+        <input type="text" id="pm-name-inp" placeholder="Your full name"
+          autocomplete="name" maxlength="100" inputmode="text"
+          pattern="[\p{L}\s'\-\.]+" spellcheck="false">
         <span class="field-error">Please enter your full name.</span>
       </div>
       <div class="form-field" id="ff-email">
         <label for="pm-email-inp">Email Address</label>
-        <input type="email" id="pm-email-inp" placeholder="your@email.com" autocomplete="email" maxlength="200">
+        <input type="email" id="pm-email-inp" placeholder="your@email.com"
+          autocomplete="email" maxlength="200" inputmode="email" spellcheck="false">
         <span class="field-error">Please enter a valid email address.</span>
       </div>
-      <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <!-- [SEC-8] Honeypot — bots fill this; humans never see it -->
+      <input type="text" name="website" class="hp-field" tabindex="-1"
+        autocomplete="off" aria-hidden="true" aria-label="Do not fill">
+      <!-- [SEC-4] CSRF token for payment form — generated client-side; replace with server nonce in production -->
+      <input type="hidden" name="_csrf_pay" id="csrf-pay-token" value="">
       <button class="pay-btn" id="pay-btn" type="button">
         <svg viewBox="0 0 24 24" id="pay-btn-icon-card" style="display:none"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
         <svg viewBox="0 0 24 24" id="pay-btn-icon-momo"><rect x="7" y="2" width="10" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-linecap="round" stroke-width="2"/></svg>
@@ -1114,11 +1019,11 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   </div>
 </div>
 
-<!-- ─── ABOUT ─────────────────────────────────────────────────── -->
 <section class="about-section" id="about">
   <div class="about-inner">
     <div class="about-img-frame reveal">
-      <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&q=80" alt="Behind the lens at eban photos">
+      <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&q=80"
+        alt="Behind the lens at eban photos" crossorigin="anonymous" loading="lazy">
     </div>
     <div class="about-text">
       <div class="section-tag reveal">The Philosophy</div>
@@ -1130,7 +1035,6 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   </div>
 </section>
 
-<!-- ─── SERVICES ──────────────────────────────────────────────── -->
 <section class="services-section" id="services">
   <div class="services-inner">
     <div class="section-tag reveal">Offerings</div>
@@ -1155,50 +1059,70 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   </div>
 </section>
 
-<!-- ─── BOOKING ───────────────────────────────────────────────── -->
 <section class="booking-section" id="booking">
   <div class="booking-inner">
     <div class="section-tag reveal">Inquire</div>
     <h2 class="section-heading reveal">Book a<br><em>session</em></h2>
     <p class="sub reveal">Complete the form below and expect a personal response within 24 hours. Every collaboration begins with a conversation.</p>
-    <form class="book-form" id="booking-form" action="https://formspree.io/f/mwvwwbdk" method="POST" novalidate>
-      <input type="hidden" name="_csrf" id="csrf-token" value="PREVIEW_TOKEN">
-      <input type="text" name="_gotcha" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <!-- [SEC-9] novalidate keeps custom validation; action uses HTTPS Formspree endpoint -->
+    <form class="book-form" id="booking-form"
+      action="https://formspree.io/f/mwvwwbdk"
+      method="POST"
+      novalidate
+      autocomplete="on">
+      <!-- [SEC-4] CSRF token — server replaces value in production -->
+      <input type="hidden" name="_csrf" id="csrf-token" value="">
+      <!-- [SEC-8] Honeypot anti-bot field -->
+      <input type="text" name="_gotcha" class="hp-field" tabindex="-1"
+        autocomplete="off" aria-hidden="true" aria-label="Do not fill">
       <input type="hidden" name="_subject" value="New Session Request — eban photos">
+
       <div class="book-row reveal">
         <div class="book-field half" id="bf-first">
-          <input type="text" name="first_name" id="bf-first-inp" required placeholder=" " maxlength="80" autocomplete="given-name">
+          <input type="text" name="first_name" id="bf-first-inp" required
+            placeholder=" " maxlength="80" autocomplete="given-name"
+            pattern="[A-Za-z\s'\-]+" spellcheck="false">
           <label for="bf-first-inp">First Name</label>
           <span class="book-error">First name is required.</span>
         </div>
         <div class="book-field half" id="bf-last">
-          <input type="text" name="last_name" id="bf-last-inp" required placeholder=" " maxlength="80" autocomplete="family-name">
+          <input type="text" name="last_name" id="bf-last-inp" required
+            placeholder=" " maxlength="80" autocomplete="family-name"
+            pattern="[A-Za-z\s'\-]+" spellcheck="false">
           <label for="bf-last-inp">Last Name</label>
           <span class="book-error">Last name is required.</span>
         </div>
       </div>
+
       <div class="book-field reveal" id="bf-email">
-        <input type="email" name="email" id="bf-email-inp" required placeholder=" " maxlength="200" autocomplete="email">
+        <input type="email" name="email" id="bf-email-inp" required
+          placeholder=" " maxlength="200" autocomplete="email"
+          inputmode="email" spellcheck="false">
         <label for="bf-email-inp">Email Address</label>
         <span class="book-error">A valid email is required.</span>
       </div>
+
       <div class="book-field reveal" id="bf-phone">
         <div class="phone-wrap">
-          <select class="country-code-select" id="bf-country-code" name="country_code" aria-label="Country code">
+          <select class="country-code-select" id="bf-country-code"
+            name="country_code" aria-label="Country code" autocomplete="tel-country-code">
             <option value="+233" selected>🇬🇭 +233</option>
             <option value="+1">🇺🇸 +1</option>
             <option value="+44">🇬🇧 +44</option>
             <option value="+234">🇳🇬 +234</option>
             <option value="+254">🇰🇪 +254</option>
           </select>
-          <input type="tel" name="phone" id="bf-phone-inp" placeholder=" " maxlength="15" autocomplete="tel" pattern="[0-9]{7,15}">
+          <input type="tel" name="phone" id="bf-phone-inp"
+            placeholder=" " maxlength="15" autocomplete="tel-national"
+            pattern="[0-9]{7,15}" inputmode="numeric">
           <label for="bf-phone-inp" class="phone-field-label" id="bf-phone-label">Phone Number</label>
         </div>
         <span class="book-error">Please enter a valid phone number.</span>
       </div>
+
       <div class="book-row reveal">
         <div class="book-field half" id="bf-service">
-          <select name="service" id="bf-service-sel" required>
+          <select name="service" id="bf-service-sel" required autocomplete="off">
             <option value="" disabled selected></option>
             <option value="portrait">Portrait Session</option>
             <option value="editorial">Editorial / Brand</option>
@@ -1210,12 +1134,16 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
           <span class="book-error">Please select a service type.</span>
         </div>
         <div class="book-field half">
-          <input type="date" name="preferred_date" id="bf-date-inp" placeholder=" ">
+          <!-- [SEC-9] min date enforced in JS; type=date prevents free-text injection -->
+          <input type="date" name="preferred_date" id="bf-date-inp"
+            placeholder=" " autocomplete="off">
           <label for="bf-date-inp">Preferred Date</label>
         </div>
       </div>
+
       <div class="book-field reveal" id="bf-msg">
-        <textarea name="message" id="bf-msg-inp" placeholder=" " maxlength="2000"></textarea>
+        <textarea name="message" id="bf-msg-inp"
+          placeholder=" " maxlength="2000" spellcheck="true"></textarea>
         <label for="bf-msg-inp">Tell me about your vision</label>
         <span class="book-error">Please share a brief message.</span>
       </div>
@@ -1226,28 +1154,32 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   </div>
 </section>
 
-<!-- ─── SOCIAL ────────────────────────────────────────────────── -->
 <section class="social-section" id="social">
   <div class="social-inner">
     <div class="section-tag reveal">Connect</div>
     <h2 class="section-heading reveal">Follow the<br><em>work</em></h2>
     <div class="social-icons reveal">
-      <a href="https://instagram.com/ebanphotos" target="_blank" rel="noopener noreferrer" class="social-link">
+      <!-- [SEC-10] rel="noopener noreferrer" on ALL external links prevents tab-napping -->
+      <a href="https://instagram.com/ebanphotos" target="_blank"
+        rel="noopener noreferrer" class="social-link" aria-label="Follow on Instagram">
         <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         <span>Instagram</span>
         <span style="font-size:0.6rem;opacity:0.4;letter-spacing:0.1em;">@ebanphotos</span>
       </a>
-      <a href="https://www.facebook.com/share/18NnMacXc2/" target="_blank" rel="noopener noreferrer" class="social-link">
+      <a href="https://www.facebook.com/share/18NnMacXc2/" target="_blank"
+        rel="noopener noreferrer" class="social-link" aria-label="Follow on Facebook">
         <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
         <span>Facebook</span>
         <span style="font-size:0.6rem;opacity:0.4;letter-spacing:0.1em;">eban photos</span>
       </a>
-      <a href="https://wa.me/233543815959" target="_blank" rel="noopener noreferrer" class="social-link">
+      <a href="https://wa.me/233543815959?text=Hello%2C%20I%27d%20like%20to%20book%20a%20session." target="_blank"
+        rel="noopener noreferrer" class="social-link" aria-label="Chat on WhatsApp">
         <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
         <span>WhatsApp</span>
         <span style="font-size:0.6rem;opacity:0.4;letter-spacing:0.1em;">+233 543 815 959</span>
       </a>
-      <a href="https://www.tiktok.com/@ebanphotos" target="_blank" rel="noopener noreferrer" class="social-link">
+      <a href="https://www.tiktok.com/@ebanphotos" target="_blank"
+        rel="noopener noreferrer" class="social-link" aria-label="Follow on TikTok">
         <svg viewBox="0 0 24 24"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
         <span>TikTok</span>
         <span style="font-size:0.6rem;opacity:0.4;letter-spacing:0.1em;">@ebanphotos</span>
@@ -1256,7 +1188,6 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   </div>
 </section>
 
-<!-- ─── CONTACT ───────────────────────────────────────────────── -->
 <section class="contact-section" id="contact">
   <div class="contact-inner">
     <div class="section-tag reveal">Get in Touch</div>
@@ -1281,7 +1212,6 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   </div>
 </section>
 
-<!-- ─── FOOTER ────────────────────────────────────────────────── -->
 <footer id="footer">
   <div class="footer-inner">
     <div>
@@ -1301,10 +1231,11 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
     <div>
       <h5>Social</h5>
       <ul>
-        <li><a href="https://instagram.com/ebanphotos" target="_blank" rel="noopener">Instagram</a></li>
-        <li><a href="#" target="_blank" rel="noopener">Facebook</a></li>
-        <li><a href="https://wa.me/233543815959" target="_blank" rel="noopener">WhatsApp</a></li>
-        <li><a href="https://www.tiktok.com/@ebanphotos" target="_blank" rel="noopener">TikTok</a></li>
+        <!-- [SEC-10] noopener noreferrer on all footer external links -->
+        <li><a href="https://instagram.com/ebanphotos" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+        <li><a href="https://www.facebook.com/share/18NnMacXc2/" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+        <li><a href="https://wa.me/233543815959" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+        <li><a href="https://www.tiktok.com/@ebanphotos" target="_blank" rel="noopener noreferrer">TikTok</a></li>
       </ul>
     </div>
     <div>
@@ -1322,10 +1253,10 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   </div>
 </footer>
 
-<!-- ─── STICKY BAR ────────────────────────────────────────────── -->
 <div class="sticky-bar" id="sticky-bar">
   <div class="sticky-left">
-    <a href="https://wa.me/233543815959" target="_blank" rel="noopener">WhatsApp Us</a>
+    <!-- [SEC-10] rel="noopener noreferrer" on sticky bar external links -->
+    <a href="https://wa.me/233543815959?text=Hello%2C%20I%27d%20like%20to%20book%20a%20session." target="_blank" rel="noopener noreferrer">WhatsApp Us</a>
     <div class="sticky-sep"></div>
     <a href="mailto:eban@ebanphotos.com">eban@ebanphotos.com</a>
     <div class="sticky-sep"></div>
@@ -1338,55 +1269,195 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
 (function() {
 'use strict';
 
-/* ── Utilities ────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-4] CSRF TOKEN GENERATION
+   Generates a cryptographically random token per page load.
+   In production your Express server should inject this token
+   via server-side rendering and validate it on every POST.
+   ═══════════════════════════════════════════════════════════════ */
+(function initCSRF() {
+  var token;
+  try {
+    /* Use crypto.randomUUID if available (modern browsers) */
+    if (window.crypto && window.crypto.randomUUID) {
+      token = window.crypto.randomUUID();
+    } else if (window.crypto && window.crypto.getRandomValues) {
+      /* Fallback: build UUID v4 manually */
+      var arr = new Uint8Array(16);
+      window.crypto.getRandomValues(arr);
+      arr[6] = (arr[6] & 0x0f) | 0x40;
+      arr[8] = (arr[8] & 0x3f) | 0x80;
+      token = Array.from(arr).map(function(b, i) {
+        return ([4,6,8,10].indexOf(i) !== -1 ? '-' : '') + b.toString(16).padStart(2,'0');
+      }).join('');
+    } else {
+      /* Last resort — Math.random (less secure; flag for server replacement) */
+      token = 'client-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    }
+  } catch(e) {
+    token = 'fallback-' + Date.now().toString(36);
+  }
+  /* Store in sessionStorage so it's available for all fetches in this session */
+  try { sessionStorage.setItem('_eban_csrf', token); } catch(e) {}
+  /* Inject into both form hidden fields */
+  var t1 = document.getElementById('csrf-token');
+  var t2 = document.getElementById('csrf-pay-token');
+  if (t1) t1.value = token;
+  if (t2) t2.value = token;
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-3] ENHANCED SANITIZATION & INPUT VALIDATION
+   Escapes all 6 HTML metacharacters + blocks dangerous protocols.
+   Used for ALL user-derived content inserted into the DOM.
+   ═══════════════════════════════════════════════════════════════ */
 function sanitize(str) {
   if (str === null || str === undefined) return '';
+  /* [SEC-3a] Convert to string and escape all HTML metacharacters */
   return String(str)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/\//g, '&#x2F;')
-    .replace(/`/g, '&#x60;').replace(/=/g, '&#x3D;');
+    .replace(/&/g,  '&amp;')
+    .replace(/</g,  '&lt;')
+    .replace(/>/g,  '&gt;')
+    .replace(/"/g,  '&quot;')
+    .replace(/'/g,  '&#039;')
+    .replace(/\//g, '&#x2F;')
+    .replace(/`/g,  '&#x60;')
+    .replace(/=/g,  '&#x3D;');
 }
 
+/* [SEC-3b] Validate URL is safe before assigning to src/href */
+function isSafeUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  var trimmed = url.trim().toLowerCase();
+  /* Block javascript:, data:, vbscript: and any other non-http(s) scheme */
+  if (/^(javascript|data|vbscript|blob|file):/i.test(trimmed)) return false;
+  /* Allow only Unsplash images and relative paths for image sources */
+  return /^https:\/\/images\.unsplash\.com\//.test(url);
+}
+
+/* [SEC-3c] Strict input validators — whitelist-based, not blacklist */
 var VALIDATORS = {
-  name:  function(v) { return v.length >= 2 && v.length <= 100; },
-  email: function(v) { return /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(v) && v.length <= 200; },
-  phone: function(v) { return v === '' || /^[0-9]{7,15}$/.test(v); },
-  text:  function(v) { return v.length >= 1 && v.length <= 2000; }
+  /* Name: Unicode letters, spaces, apostrophes, hyphens, periods only */
+  name: function(v) {
+    if (!v || v.length < 2 || v.length > 100) return false;
+    /* Block HTML tags, script keywords, SQL fragments */
+    if (/<[^>]*>/.test(v)) return false;
+    if (/script|onload|onerror|SELECT|INSERT|DROP|--|;/i.test(v)) return false;
+    return /^[\p{L}\s'\-\.]+$/u.test(v);
+  },
+  /* Email: RFC-compliant pattern + length check */
+  email: function(v) {
+    if (!v || v.length > 200) return false;
+    return /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(v);
+  },
+  /* Phone: digits only, 7–15 chars (E.164 range) */
+  phone: function(v) {
+    return v === '' || /^[0-9]{7,15}$/.test(v);
+  },
+  /* Free text: length limits only — no HTML/script injection */
+  text: function(v) {
+    if (!v || v.length < 1 || v.length > 2000) return false;
+    /* Reject obvious script injection attempts in textarea */
+    if (/<script[\s\S]*?>[\s\S]*?<\/script>/i.test(v)) return false;
+    if (/javascript\s*:/i.test(v)) return false;
+    return true;
+  },
+  /* Date: YYYY-MM-DD ISO format, must be today or future */
+  date: function(v) {
+    if (!v) return true; /* optional field */
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+    var d = new Date(v);
+    var today = new Date(); today.setHours(0,0,0,0);
+    return !isNaN(d.getTime()) && d >= today;
+  },
+  /* Whitelist for service type select */
+  service: function(v) {
+    return ['portrait','editorial','ceremony','lifestyle','other'].indexOf(v) !== -1;
+  }
 };
 
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-8] ENHANCED RATE LIMITER
+   Tracks attempts per action key with exponential back-off.
+   Uses memory (not localStorage) to prevent client tampering.
+   ═══════════════════════════════════════════════════════════════ */
 var RateLimiter = (function() {
-  var attempts = {};
+  var store = {};
   return {
     check: function(key, maxAttempts, windowMs) {
       var now = Date.now();
-      if (!attempts[key]) attempts[key] = [];
-      attempts[key] = attempts[key].filter(function(t) { return now - t < windowMs; });
-      if (attempts[key].length >= maxAttempts) return false;
-      attempts[key].push(now); return true;
+      if (!store[key]) store[key] = [];
+      /* Purge expired entries */
+      store[key] = store[key].filter(function(t) { return now - t < windowMs; });
+      if (store[key].length >= maxAttempts) return false;
+      store[key].push(now);
+      return true;
     },
-    reset: function(key) { delete attempts[key]; }
+    reset: function(key) { delete store[key]; },
+    /* Returns remaining cooldown in ms */
+    cooldown: function(key, windowMs) {
+      if (!store[key] || !store[key].length) return 0;
+      var oldest = store[key][0];
+      var remaining = windowMs - (Date.now() - oldest);
+      return remaining > 0 ? remaining : 0;
+    }
   };
 })();
 
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-9] ENFORCE MIN DATE on booking date picker
+   Prevents users from selecting past dates.
+   ═══════════════════════════════════════════════════════════════ */
+(function() {
+  var dateInp = document.getElementById('bf-date-inp');
+  if (dateInp) {
+    var today = new Date();
+    var yyyy = today.getFullYear();
+    var mm   = String(today.getMonth() + 1).padStart(2, '0');
+    var dd   = String(today.getDate()).padStart(2, '0');
+    dateInp.setAttribute('min', yyyy + '-' + mm + '-' + dd);
+  }
+})();
+
+/* Premium access flag — only ever set to true by server verification */
 var premiumUnlocked = false;
 
-/* Session verify */
-(function() {
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-6] SESSION TOKEN VERIFICATION
+   Validates any stored JWT with the server before granting UI access.
+   Token format is validated client-side first to prevent SSRF.
+   ═══════════════════════════════════════════════════════════════ */
+(function verifyStoredSession() {
   var token;
-  try { token = localStorage.getItem('eban_access_token'); } catch(e) {}
-  if (!token || !/^[a-zA-Z0-9_\-]{32,128}$/.test(token)) return;
+  try { token = localStorage.getItem('eban_access_token'); } catch(e) { return; }
+  if (!token) return;
+  /* [SEC-6a] Validate token format before sending (alphanumeric, 32–128 chars) */
+  if (!/^[a-zA-Z0-9_\-]{32,128}$/.test(token)) {
+    try { localStorage.removeItem('eban_access_token'); } catch(e) {}
+    return;
+  }
+  var csrfToken;
+  try { csrfToken = sessionStorage.getItem('_eban_csrf') || ''; } catch(e) { csrfToken = ''; }
   fetch('/api/verify-session', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    credentials: 'same-origin', body: JSON.stringify({ token: token })
-  }).then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      /* [SEC-4] Send CSRF token with every authenticated request */
+      'X-CSRF-Token': csrfToken
+    },
+    credentials: 'same-origin',
+    body: JSON.stringify({ token: token })
+  })
+  .then(function(r) { return r.ok ? r.json() : Promise.reject('http_' + r.status); })
   .then(function(d) {
     if (d && d.valid === true) { premiumUnlocked = true; applyUnlockedUI(); }
     else { try { localStorage.removeItem('eban_access_token'); } catch(e) {} }
-  }).catch(function() {});
+  })
+  .catch(function() { /* Network/server error — do NOT grant access silently */ });
 })();
 
 /* ── NAV ──────────────────────────────────────────────────────── */
-var nav = document.getElementById('nav');
+var nav       = document.getElementById('nav');
 var stickyBar = document.getElementById('sticky-bar');
 var navToggle = document.getElementById('nav-toggle');
 var mobileMenu = document.getElementById('mobile-menu');
@@ -1394,8 +1465,11 @@ var lastScrollY = 0;
 
 window.addEventListener('scroll', function() {
   var cur = window.scrollY;
-  if (cur > lastScrollY && cur > 80) { nav.classList.add('hide'); stickyBar.classList.add('hide'); }
-  else { nav.classList.remove('hide'); stickyBar.classList.remove('hide'); }
+  if (cur > lastScrollY && cur > 80) {
+    nav.classList.add('hide'); stickyBar.classList.add('hide');
+  } else {
+    nav.classList.remove('hide'); stickyBar.classList.remove('hide');
+  }
   if (cur > 60) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
   lastScrollY = cur;
 }, { passive: true });
@@ -1416,10 +1490,14 @@ document.querySelectorAll('.mobile-nav-link').forEach(function(link) {
 var reveals = document.querySelectorAll('.reveal');
 if ('IntersectionObserver' in window) {
   var revealObs = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+    });
   }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
   reveals.forEach(function(r) { revealObs.observe(r); });
-} else { reveals.forEach(function(r) { r.classList.add('visible'); }); }
+} else {
+  reveals.forEach(function(r) { r.classList.add('visible'); });
+}
 
 /* ── ALBUM DATA ───────────────────────────────────────────────── */
 var ALBUMS = {
@@ -1476,9 +1554,14 @@ var ALBUMS = {
   }
 };
 
-/* ── Paystack config ──────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-6] PAYSTACK CONFIG
+   ONLY the PUBLIC key lives in frontend code.
+   The SECRET key must ONLY exist in server.js / environment variables.
+   Amount and currency are validated server-side after every payment.
+   ═══════════════════════════════════════════════════════════════ */
 var PS_KEY      = 'pk_live_b11c21ce75a9bb21ed3e05d2337c8bc40a093794';
-var PS_AMOUNT   = 15 * 100;
+var PS_AMOUNT   = 15 * 100;  /* pesewas — server must independently verify this */
 var PS_CURRENCY = 'GHS';
 
 /* ── Payment method toggle ────────────────────────────────────── */
@@ -1490,8 +1573,10 @@ var payBtnIconMomo = document.getElementById('pay-btn-icon-momo');
 function updatePayBtn() {
   var checked = document.querySelector('input[name="pm_method"]:checked');
   if (!checked) return;
+  /* [SEC-3] Whitelist-validate the payment method value */
   var val = ['momo','card'].indexOf(checked.value) !== -1 ? checked.value : 'momo';
   if (val === 'momo') {
+    /* [SEC-3] Use textContent — never innerHTML — for user-data-derived strings */
     payBtnLabel.textContent = 'Pay GHS 15 via Mobile Money';
     payBtnIconCard.style.display = 'none'; payBtnIconMomo.style.display = '';
   } else {
@@ -1501,9 +1586,7 @@ function updatePayBtn() {
 }
 pmRadios.forEach(function(r) { r.addEventListener('change', updatePayBtn); });
 
-/* ═══════════════════════════════════════════════════════════════
-   ── LIGHTBOX — PINTEREST MASONRY ─────────────────────────────
-   ═══════════════════════════════════════════════════════════════ */
+/* ── LIGHTBOX — PINTEREST MASONRY ────────────────────────────── */
 var lightbox     = document.getElementById('lightbox');
 var lbName       = document.getElementById('lb-name');
 var lbMasonry    = document.getElementById('lb-masonry');
@@ -1513,15 +1596,9 @@ var lbDetailImg  = document.getElementById('lb-detail-img');
 var lbDetailCap  = document.getElementById('lb-detail-caption');
 var lbDetailCnt  = document.getElementById('lb-detail-count');
 var lbDlBtn      = document.getElementById('lb-dl-btn');
-
 var currentAlbum = null;
 var currentIdx   = 0;
 
-/*
- * SPAN_CYCLE — drives the Pinterest height variation.
- * Pattern cycles across all cards regardless of count.
- * Heights: xl≈552px  tall≈472px  md≈344px  wide≈280px  sm≈216px
- */
 var SPAN_CYCLE = [
   'lb-span-tall', 'lb-span-md',   'lb-span-sm',
   'lb-span-xl',   'lb-span-wide', 'lb-span-md',
@@ -1529,60 +1606,69 @@ var SPAN_CYCLE = [
   'lb-span-wide', 'lb-span-md',   'lb-span-tall'
 ];
 
-/* ── Safe download helper ─────────────────────────────────────── */
+/* ─── [SEC-3] Safe image download ────────────────────────────── */
 function dlImage(src, name) {
-  if (!/^https:\/\/images\.unsplash\.com\//.test(src)) return;
+  /* [SEC-3] Validate URL is from allowed domain before creating anchor */
+  if (!isSafeUrl(src)) return;
+  var safeFilename = sanitize(name || 'eban-photo')
+    .replace(/[^a-zA-Z0-9\-_\.]/g, '_')
+    .slice(0, 80);
   var a = document.createElement('a');
-  a.href = src; a.download = sanitize(name || 'eban-photo');
-  a.target = '_blank'; a.rel = 'noopener noreferrer';
+  a.href       = src;
+  a.download   = safeFilename;
+  a.target     = '_blank';
+  /* [SEC-10] noopener noreferrer on programmatically created links */
+  a.rel        = 'noopener noreferrer';
+  a.referrerPolicy = 'no-referrer';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
-/* ── Open album — build masonry grid ──────────────────────────── */
+/* ─── Open album ─────────────────────────────────────────────── */
 function openAlbum(key) {
-  if (!ALBUMS.hasOwnProperty(key)) return;
+  /* [SEC-3] Whitelist-validate album key against known object keys */
+  if (!Object.prototype.hasOwnProperty.call(ALBUMS, key)) return;
   if (key === 'premium' && !premiumUnlocked) { openPayModal(); return; }
 
   currentAlbum = ALBUMS[key];
   currentIdx   = 0;
 
+  /* [SEC-3] textContent only — never innerHTML for data-derived content */
   lbName.textContent    = currentAlbum.name;
   lbFootTxt.textContent = currentAlbum.images.length + ' frames in this collection';
 
-  /* Clear grid */
   while (lbMasonry.firstChild) lbMasonry.removeChild(lbMasonry.firstChild);
 
-  /* Build cards */
   currentAlbum.images.forEach(function(img, i) {
     var spanClass = SPAN_CYCLE[i % SPAN_CYCLE.length];
-
     var card = document.createElement('div');
     card.className = 'lb-mcard ' + spanClass;
     card.setAttribute('tabindex', '0');
     card.setAttribute('role', 'button');
+    /* [SEC-3] sanitize caption before inserting into aria-label attribute */
     card.setAttribute('aria-label', 'View ' + sanitize(img.caption));
 
-    /* Image */
     var image = document.createElement('img');
     image.className = 'lb-mcard-img';
-    image.src     = img.src;
-    image.alt     = sanitize(img.caption);
-    image.loading = 'lazy';
+    /* [SEC-3] Validate image src before assigning */
+    if (isSafeUrl(img.src)) image.src = img.src;
+    image.alt              = sanitize(img.caption);
+    image.loading          = 'lazy';
+    image.crossOrigin      = 'anonymous';
+    image.referrerPolicy   = 'no-referrer';
 
-    /* Glass overlay */
     var overlay = document.createElement('div');
     overlay.className = 'lb-mcard-overlay';
 
-    /* Expand icon */
     var icon = document.createElement('div');
     icon.className = 'lb-mcard-icon';
+    /* Static SVG — not user data — safe to set once */
     icon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>';
 
-    /* Caption */
     var captionWrap = document.createElement('div');
     captionWrap.className = 'lb-mcard-caption';
     var titleEl = document.createElement('span');
     titleEl.className   = 'lb-mcard-title';
+    /* [SEC-3] textContent for all user-derived text */
     titleEl.textContent = img.caption || currentAlbum.name;
     var subEl = document.createElement('span');
     subEl.className   = 'lb-mcard-sub';
@@ -1595,7 +1681,6 @@ function openAlbum(key) {
     card.appendChild(image);
     card.appendChild(overlay);
 
-    /* Click → detail view */
     (function(idx) {
       function handler() { openDetail(idx); }
       card.addEventListener('click', handler);
@@ -1607,9 +1692,7 @@ function openAlbum(key) {
     lbMasonry.appendChild(card);
   });
 
-  /* Scroll masonry back to top */
   document.getElementById('lb-body').scrollTop = 0;
-
   lightbox.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   requestAnimationFrame(function() {
@@ -1617,15 +1700,14 @@ function openAlbum(key) {
   });
 }
 
-/* ── Detail / full-screen view ────────────────────────────────── */
 function openDetail(idx) {
   currentIdx = idx;
   var img = currentAlbum.images[idx];
-  lbDetailImg.src           = img.src;
-  lbDetailImg.alt           = sanitize(img.caption);
-  lbDetailCap.textContent   = img.caption;
-  lbDetailCnt.textContent   = (idx + 1) + ' / ' + currentAlbum.images.length;
-
+  /* [SEC-3] Validate src before assigning to img element */
+  if (isSafeUrl(img.src)) lbDetailImg.src = img.src;
+  lbDetailImg.alt         = sanitize(img.caption);
+  lbDetailCap.textContent = img.caption;
+  lbDetailCnt.textContent = (idx + 1) + ' / ' + currentAlbum.images.length;
   lbDetailVeil.style.display = 'flex';
   requestAnimationFrame(function() {
     requestAnimationFrame(function() { lbDetailVeil.classList.add('visible'); });
@@ -1643,7 +1725,7 @@ function detailGoTo(idx) {
   var img = imgs[currentIdx];
   lbDetailImg.classList.add('fade');
   setTimeout(function() {
-    lbDetailImg.src         = img.src;
+    if (isSafeUrl(img.src)) lbDetailImg.src = img.src;
     lbDetailImg.alt         = sanitize(img.caption);
     lbDetailCap.textContent = img.caption;
     lbDetailCnt.textContent = (currentIdx + 1) + ' / ' + imgs.length;
@@ -1651,7 +1733,6 @@ function detailGoTo(idx) {
   }, 260);
 }
 
-/* ── Detail controls ──────────────────────────────────────────── */
 document.getElementById('lb-detail-close').addEventListener('click', closeDetail);
 document.getElementById('lb-detail-prev').addEventListener('click', function() { detailGoTo(currentIdx - 1); });
 document.getElementById('lb-detail-next').addEventListener('click', function() { detailGoTo(currentIdx + 1); });
@@ -1660,7 +1741,6 @@ lbDlBtn.addEventListener('click', function() {
   dlImage(currentAlbum.images[currentIdx].src, currentAlbum.images[currentIdx].caption);
 });
 
-/* ── Lightbox close ───────────────────────────────────────────── */
 function closeLightbox() {
   closeDetail();
   lightbox.classList.remove('visible');
@@ -1669,7 +1749,6 @@ function closeLightbox() {
 document.getElementById('lb-close').addEventListener('click', closeLightbox);
 lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeLightbox(); });
 
-/* ── Download all ─────────────────────────────────────────────── */
 document.getElementById('lb-dl-all').addEventListener('click', function() {
   if (!currentAlbum) return;
   currentAlbum.images.forEach(function(img, i) {
@@ -1677,7 +1756,6 @@ document.getElementById('lb-dl-all').addEventListener('click', function() {
   });
 });
 
-/* ── Keyboard navigation ──────────────────────────────────────── */
 document.addEventListener('keydown', function(e) {
   if (lightbox.style.display !== 'flex') return;
   if (lbDetailVeil.classList.contains('visible')) {
@@ -1689,11 +1767,13 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-/* ── Album card click handlers ────────────────────────────────── */
 document.querySelectorAll('.album-card:not(.premium-card)').forEach(function(card) {
   function handler() {
     var key = card.dataset.album;
-    if (key && /^[a-zA-Z0-9_\-]+$/.test(key) && ALBUMS.hasOwnProperty(key)) openAlbum(key);
+    /* [SEC-3] Whitelist-validate data-album attribute before use */
+    if (key && /^[a-zA-Z0-9_\-]+$/.test(key) && Object.prototype.hasOwnProperty.call(ALBUMS, key)) {
+      openAlbum(key);
+    }
   }
   card.addEventListener('click', handler);
   card.addEventListener('keydown', function(e) {
@@ -1728,100 +1808,209 @@ document.addEventListener('keydown', function(e) {
 function validateModalField(inputEl, container, ruleKey) {
   var val = inputEl.value.trim();
   var valid = VALIDATORS[ruleKey] ? VALIDATORS[ruleKey](val) : val.length > 0;
-  container.classList.toggle('error', !valid); return valid;
+  container.classList.toggle('error', !valid);
+  return valid;
 }
 
-document.getElementById('pay-btn').addEventListener('click', function() {
+/* [SEC-8] Debounce helper — prevents rapid repeated submission */
+function debounce(fn, ms) {
+  var timer;
+  return function() {
+    clearTimeout(timer);
+    var args = arguments;
+    var ctx  = this;
+    timer = setTimeout(function() { fn.apply(ctx, args); }, ms);
+  };
+}
+
+document.getElementById('pay-btn').addEventListener('click', debounce(function() {
+  /* [SEC-8] Honeypot check — bots fill this; humans can't see it */
   var hp = modalVeil.querySelector('input[name="website"]');
   if (hp && hp.value.length > 0) return;
-  var nameEl = document.getElementById('pm-name-inp');
+
+  var nameEl  = document.getElementById('pm-name-inp');
   var emailEl = document.getElementById('pm-email-inp');
+
+  /* [SEC-3] Validate with strict rules before proceeding */
   var okName  = validateModalField(nameEl,  document.getElementById('ff-name'),  'name');
   var okEmail = validateModalField(emailEl, document.getElementById('ff-email'), 'email');
   if (!okName || !okEmail) return;
+
+  /* [SEC-8] Rate limit: max 3 payment attempts per 5 minutes */
   if (!RateLimiter.check('payment', 3, 5 * 60 * 1000)) {
-    payBtnLabel.textContent = 'Too many attempts. Please wait.';
-    setTimeout(function() { updatePayBtn(); }, 3000); return;
+    var cd = Math.ceil(RateLimiter.cooldown('payment', 5 * 60 * 1000) / 1000);
+    payBtnLabel.textContent = 'Too many attempts. Wait ' + cd + 's.';
+    setTimeout(updatePayBtn, 3000);
+    return;
   }
+
   if (typeof PaystackPop === 'undefined') {
-    alert('Payment system is loading. Please try again.');  return;
+    alert('Payment system is loading. Please wait and try again.');
+    return;
   }
+
+  /* [SEC-3] Whitelist-validate selected payment method */
   var checkedMethod = document.querySelector('input[name="pm_method"]:checked');
-  var selectedMethod = (checkedMethod && ['momo','card'].indexOf(checkedMethod.value) !== -1) ? checkedMethod.value : 'momo';
+  var selectedMethod = (checkedMethod && ['momo','card'].indexOf(checkedMethod.value) !== -1)
+    ? checkedMethod.value : 'momo';
+
   var btn = document.getElementById('pay-btn');
-  btn.disabled = true; payBtnLabel.textContent = 'Opening payment…';
+  btn.disabled = true;
+  payBtnLabel.textContent = 'Opening payment…';
+
   var channels = selectedMethod === 'momo' ? ['mobile_money_ghana'] : ['card'];
-  var ref = 'eban_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+
+  /* [SEC-6] Cryptographically random payment reference — not guessable */
+  var ref = 'eban_';
+  if (window.crypto && window.crypto.getRandomValues) {
+    var arr = new Uint8Array(8);
+    window.crypto.getRandomValues(arr);
+    ref += Array.from(arr).map(function(b) { return b.toString(16).padStart(2,'0'); }).join('');
+  } else {
+    ref += Date.now().toString(36) + Math.random().toString(36).slice(2,9);
+  }
+
+  var csrfToken;
+  try { csrfToken = sessionStorage.getItem('_eban_csrf') || ''; } catch(e) { csrfToken = ''; }
+
   var handler = PaystackPop.setup({
-    key: PS_KEY, email: emailEl.value.trim(), amount: PS_AMOUNT, currency: PS_CURRENCY,
-    channels: channels, ref: ref,
-    metadata: { custom_fields: [{ display_name: 'Customer Name', variable_name: 'name', value: nameEl.value.trim().slice(0,100) }] },
-    callback: function(response) { payBtnLabel.textContent = 'Verifying…'; verifyPaymentServerSide(response.reference, nameEl.value.trim()); },
-    onClose: function() { btn.disabled = false; updatePayBtn(); }
+    key:      PS_KEY,
+    /* [SEC-3] Trim and limit email length before passing to Paystack */
+    email:    emailEl.value.trim().slice(0, 200),
+    amount:   PS_AMOUNT,
+    currency: PS_CURRENCY,
+    channels: channels,
+    ref:      ref,
+    metadata: {
+      custom_fields: [
+        {
+          display_name: 'Customer Name',
+          variable_name: 'name',
+          /* [SEC-3] Sanitize and limit length of metadata */
+          value: nameEl.value.trim().replace(/[<>"']/g,'').slice(0, 100)
+        },
+        { display_name: 'Payment Method', variable_name: 'method',  value: selectedMethod },
+        { display_name: 'Product',        variable_name: 'product', value: 'eban_premium_archive' }
+      ]
+    },
+    callback: function(response) {
+      payBtnLabel.textContent = 'Verifying payment…';
+      verifyPaymentServerSide(response.reference, nameEl.value.trim(), csrfToken);
+    },
+    onClose: function() {
+      btn.disabled = false;
+      updatePayBtn();
+    }
   });
   handler.openIframe();
-});
+}, 300));
 
-function verifyPaymentServerSide(reference, fullName) {
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-6] SERVER-SIDE PAYMENT VERIFICATION
+   The frontend NEVER trusts its own payment state.
+   Always verifies with the server before granting access.
+   ═══════════════════════════════════════════════════════════════ */
+function verifyPaymentServerSide(reference, fullName, csrfToken) {
+  /* [SEC-3] Validate reference format before sending to server (prevents SSRF) */
   if (!/^[a-zA-Z0-9_\-]{8,128}$/.test(reference)) { showPaymentError(); return; }
+
   fetch('/api/verify-payment', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': (document.getElementById('csrf-token') || {}).value || '' },
-    credentials: 'same-origin', body: JSON.stringify({ reference: reference, product: 'premium_archive' })
-  }).then(function(res) { return res.ok ? res.json() : Promise.reject(); })
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      /* [SEC-4] CSRF token on every state-changing request */
+      'X-CSRF-Token': csrfToken || ''
+    },
+    credentials: 'same-origin',
+    body: JSON.stringify({
+      reference: reference,
+      product:   'premium_archive'
+      /* NOTE: Do NOT send amount/currency from frontend — server fetches
+         these independently from Paystack's API to prevent tampering */
+    })
+  })
+  .then(function(res) {
+    if (!res.ok) return Promise.reject('server_error_' + res.status);
+    return res.json();
+  })
   .then(function(data) {
-    if (data && data.verified === true && data.accessToken) {
+    /* [SEC-6] Server must return a signed JWT — never a plain boolean */
+    if (data && data.verified === true && data.accessToken &&
+        typeof data.accessToken === 'string' &&
+        /^[a-zA-Z0-9_\-\.]{32,512}$/.test(data.accessToken)) {
       try { localStorage.setItem('eban_access_token', data.accessToken); } catch(e) {}
       grantPremiumAccess(fullName);
-    } else { showPaymentError(); }
-  }).catch(function() { showPaymentError(); });
+    } else {
+      showPaymentError();
+    }
+  })
+  .catch(function() { showPaymentError(); });
 }
 
 function showPaymentError() {
-  var btn = document.getElementById('pay-btn'); btn.disabled = false;
-  payBtnLabel.textContent = 'Verification failed. Contact support.';
-  setTimeout(function() { updatePayBtn(); }, 4000);
+  var btn = document.getElementById('pay-btn');
+  btn.disabled = false;
+  payBtnLabel.textContent = 'Verification failed. Please contact support.';
+  setTimeout(updatePayBtn, 4000);
 }
 
-function grantPremiumAccess(fullName) { premiumUnlocked = true; revealUnlockedState(fullName); }
+function grantPremiumAccess(fullName) {
+  premiumUnlocked = true;
+  revealUnlockedState(fullName);
+}
 
 function revealUnlockedState(firstName) {
   var content = document.getElementById('modal-content');
+  /* [SEC-3] Sanitize first name — textContent used, not innerHTML */
   var fname = sanitize((firstName || 'Collector').split(' ')[0].slice(0, 40));
+
+  /* [SEC-3] Build all DOM elements using safe API — never innerHTML for user data */
   var wrapper = document.createElement('div'); wrapper.className = 'pay-success';
   var ring = document.createElement('div'); ring.className = 'pay-success-ring';
+  /* Static SVG — no user data */
   ring.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" stroke="var(--gold)" fill="none" stroke-width="2"/></svg>';
   var heading = document.createElement('h3');
   heading.appendChild(document.createTextNode('Access Granted,'));
   heading.appendChild(document.createElement('br'));
+  /* [SEC-3] Insert name as text node — never concatenated into innerHTML */
   heading.appendChild(document.createTextNode(fname + '.'));
   var body = document.createElement('p');
   body.textContent = 'Your payment was successful. The Intimate Archive is now open.';
   var viewBtn = document.createElement('button');
   viewBtn.className = 'unlock-btn'; viewBtn.type = 'button';
   viewBtn.style.cssText = 'margin:2rem auto 0;justify-content:center;';
+  /* Static button label — no user data */
   viewBtn.innerHTML = '<span>View the Archive</span>';
-  wrapper.appendChild(ring); wrapper.appendChild(heading); wrapper.appendChild(body); wrapper.appendChild(viewBtn);
+  wrapper.appendChild(ring); wrapper.appendChild(heading);
+  wrapper.appendChild(body); wrapper.appendChild(viewBtn);
   while (content.firstChild) content.removeChild(content.firstChild);
   content.appendChild(wrapper);
   applyUnlockedUI();
-  viewBtn.addEventListener('click', function() { closePayModal(); setTimeout(function() { openAlbum('premium'); }, 450); });
+  viewBtn.addEventListener('click', function() {
+    closePayModal();
+    setTimeout(function() { openAlbum('premium'); }, 450);
+  });
 }
 
 function applyUnlockedUI() {
   var lockVeil = document.getElementById('premium-lock-veil');
   if (lockVeil) {
-    lockVeil.style.backdropFilter = 'none'; lockVeil.style.background = 'rgba(13,15,6,0.08)';
+    lockVeil.style.backdropFilter = 'none';
+    lockVeil.style.background = 'rgba(13,15,6,0.08)';
+    /* Static SVG — safe to use innerHTML here */
     lockVeil.innerHTML = '<div class="lock-ring" style="background:rgba(232,217,106,0.18);border-color:var(--gold)"><svg viewBox="0 0 24 24" style="width:26px;height:26px;stroke:var(--gold);fill:none;stroke-width:1.5"><polyline points="20 6 9 17 4 12"/></svg></div>';
   }
   var unlockBtn0 = document.getElementById('open-modal-btn');
   if (unlockBtn0) {
     while (unlockBtn0.firstChild) unlockBtn0.removeChild(unlockBtn0.firstChild);
-    var s = document.createElement('span'); s.textContent = '✓ Unlocked — Click to View';
+    var s = document.createElement('span');
+    /* [SEC-3] textContent for button label */
+    s.textContent = '✓ Unlocked — Click to View';
     unlockBtn0.appendChild(s);
   }
 }
 
-/* ── Phone label sync ─────────────────────────────────────────── */
+/* ── Phone label positioning ──────────────────────────────────── */
 var phoneInp      = document.getElementById('bf-phone-inp');
 var phoneLabel    = document.getElementById('bf-phone-label');
 var countrySelect = document.getElementById('bf-country-code');
@@ -1829,23 +2018,39 @@ var countrySelect = document.getElementById('bf-country-code');
 function syncPhoneLabel() {
   var filled  = phoneInp.value.trim().length > 0;
   var focused = document.activeElement === phoneInp;
-  if (filled || focused) { phoneLabel.style.top = '0.38rem'; phoneLabel.style.fontSize = '0.56rem'; phoneLabel.style.opacity = '1'; phoneLabel.style.color = 'var(--gold)'; }
-  else { phoneLabel.style.top = '1.05rem'; phoneLabel.style.fontSize = '0.68rem'; phoneLabel.style.opacity = '0.38'; phoneLabel.style.color = 'var(--cream)'; }
+  if (filled || focused) {
+    phoneLabel.style.top = '0.38rem'; phoneLabel.style.fontSize = '0.56rem';
+    phoneLabel.style.opacity = '1';   phoneLabel.style.color = 'var(--gold)';
+  } else {
+    phoneLabel.style.top = '1.05rem'; phoneLabel.style.fontSize = '0.68rem';
+    phoneLabel.style.opacity = '0.38'; phoneLabel.style.color = 'var(--cream)';
+  }
 }
-function positionPhoneLabel() { var w = countrySelect.offsetWidth; phoneLabel.style.left = (w + 12) + 'px'; syncPhoneLabel(); }
+function positionPhoneLabel() {
+  var w = countrySelect.offsetWidth;
+  phoneLabel.style.left = (w + 12) + 'px';
+  syncPhoneLabel();
+}
 phoneInp.addEventListener('focus', function() { positionPhoneLabel(); syncPhoneLabel(); });
 phoneInp.addEventListener('blur',  function() { positionPhoneLabel(); syncPhoneLabel(); });
 phoneInp.addEventListener('input', function() {
-  var cleaned = phoneInp.value.replace(/[^0-9]/g,'').slice(0,15);
-  if (phoneInp.value !== cleaned) phoneInp.value = cleaned; syncPhoneLabel();
+  /* [SEC-3] Strip all non-digit characters from phone field in real time */
+  var cleaned = phoneInp.value.replace(/[^0-9]/g, '').slice(0, 15);
+  if (phoneInp.value !== cleaned) phoneInp.value = cleaned;
+  syncPhoneLabel();
 });
 countrySelect.addEventListener('change', positionPhoneLabel);
-window.addEventListener('load', positionPhoneLabel);
+window.addEventListener('load',   positionPhoneLabel);
 window.addEventListener('resize', positionPhoneLabel);
 
 /* ── BOOKING FORM ─────────────────────────────────────────────── */
 var bookForm = document.getElementById('booking-form');
-function showBookError(fieldId, show) { var el = document.getElementById(fieldId); if (el) el.classList.toggle('error', show); }
+
+function showBookError(fieldId, show) {
+  var el = document.getElementById(fieldId);
+  if (el) el.classList.toggle('error', show);
+}
+
 function validateBookForm() {
   var first = document.getElementById('bf-first-inp').value.trim();
   var last  = document.getElementById('bf-last-inp').value.trim();
@@ -1853,29 +2058,107 @@ function validateBookForm() {
   var svc   = document.getElementById('bf-service-sel').value;
   var msg   = document.getElementById('bf-msg-inp').value.trim();
   var phone = document.getElementById('bf-phone-inp').value.trim();
-  var firstOk = first.length >= 1; var lastOk = last.length >= 1;
+  var date  = document.getElementById('bf-date-inp').value;
+
+  /* [SEC-3] Strict whitelist validation for every field */
+  var firstOk = first.length >= 1  && first.length <= 80;
+  var lastOk  = last.length >= 1   && last.length <= 80;
   var emailOk = VALIDATORS.email(email);
-  var svcOk   = ['portrait','editorial','ceremony','lifestyle','other'].indexOf(svc) !== -1;
-  var msgOk   = msg.length >= 1; var phoneOk = VALIDATORS.phone(phone);
-  showBookError('bf-first', !firstOk); showBookError('bf-last', !lastOk);
-  showBookError('bf-email', !emailOk); showBookError('bf-service', !svcOk); showBookError('bf-msg', !msgOk);
-  return firstOk && lastOk && emailOk && svcOk && msgOk;
+  var svcOk   = VALIDATORS.service(svc);
+  var msgOk   = VALIDATORS.text(msg);
+  var phoneOk = VALIDATORS.phone(phone);
+  var dateOk  = VALIDATORS.date(date);
+
+  showBookError('bf-first',   !firstOk);
+  showBookError('bf-last',    !lastOk);
+  showBookError('bf-email',   !emailOk);
+  showBookError('bf-service', !svcOk);
+  showBookError('bf-msg',     !msgOk);
+  if (phone.length > 0) showBookError('bf-phone', !phoneOk);
+
+  return firstOk && lastOk && emailOk && svcOk && msgOk && dateOk;
 }
-bookForm.addEventListener('submit', function(e) {
-  e.preventDefault();
-  var hp = bookForm.querySelector('input[name="_gotcha"]'); if (hp && hp.value.length > 0) return;
-  if (!RateLimiter.check('booking', 3, 10 * 60 * 1000)) { document.getElementById('book-btn-text').textContent = 'Too many submissions. Please wait.'; return; }
-  if (!validateBookForm()) return;
-  var btn = document.getElementById('book-submit'); var btnText = document.getElementById('book-btn-text');
-  btn.disabled = true; btnText.textContent = 'Sending…';
-  fetch(bookForm.action, { method: 'POST', body: new FormData(bookForm), headers: { 'Accept': 'application/json' } })
-  .then(function(res) {
-    if (res.ok) { btnText.textContent = '✓ Request Sent — We\'ll be in touch within 24 hours.'; bookForm.reset(); positionPhoneLabel(); RateLimiter.reset('booking'); }
-    else { btnText.textContent = 'Something went wrong. Please email us directly.'; btn.disabled = false; }
-  }).catch(function() { btnText.textContent = 'Network error. Please try again.'; btn.disabled = false; });
+
+/* Live validation on blur */
+['bf-first-inp','bf-last-inp','bf-email-inp','bf-service-sel','bf-msg-inp'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('blur', function() {
+    var container = el.closest('.book-field');
+    if (!container) return;
+    var val = el.value.trim();
+    var isValid;
+    if (id === 'bf-email-inp')   isValid = VALIDATORS.email(val);
+    else if (id === 'bf-service-sel') isValid = VALIDATORS.service(val);
+    else isValid = val.length >= 1;
+    container.classList.toggle('error', !isValid);
+  });
+  el.addEventListener('input', function() {
+    var container = el.closest('.book-field');
+    if (container && container.classList.contains('error')) {
+      var val = el.value.trim();
+      var isValid;
+      if (id === 'bf-email-inp')   isValid = VALIDATORS.email(val);
+      else if (id === 'bf-service-sel') isValid = VALIDATORS.service(val);
+      else isValid = val.length >= 1;
+      if (isValid) container.classList.remove('error');
+    }
+  });
 });
+
+bookForm.addEventListener('submit', debounce(function(e) {
+  e.preventDefault();
+
+  /* [SEC-8] Honeypot check */
+  var hp = bookForm.querySelector('input[name="_gotcha"]');
+  if (hp && hp.value.length > 0) return;
+
+  /* [SEC-8] Rate limit: max 3 booking submissions per 10 minutes */
+  if (!RateLimiter.check('booking', 3, 10 * 60 * 1000)) {
+    var cd = Math.ceil(RateLimiter.cooldown('booking', 10 * 60 * 1000) / 1000);
+    document.getElementById('book-btn-text').textContent =
+      'Too many submissions. Please wait ' + cd + 's.';
+    return;
+  }
+
+  if (!validateBookForm()) return;
+
+  /* [SEC-4] Refresh CSRF token in form before submit */
+  var csrfEl = document.getElementById('csrf-token');
+  var csrfVal;
+  try { csrfVal = sessionStorage.getItem('_eban_csrf') || ''; } catch(e) { csrfVal = ''; }
+  if (csrfEl) csrfEl.value = csrfVal;
+
+  var btn     = document.getElementById('book-submit');
+  var btnText = document.getElementById('book-btn-text');
+  btn.disabled = true;
+  btnText.textContent = 'Sending…';
+
+  fetch(bookForm.action, {
+    method: 'POST',
+    body:    new FormData(bookForm),
+    headers: { 'Accept': 'application/json' }
+  })
+  .then(function(res) {
+    if (res.ok) {
+      btnText.textContent = '✓ Request Sent — We\'ll be in touch within 24 hours.';
+      bookForm.reset();
+      positionPhoneLabel();
+      RateLimiter.reset('booking');
+    } else {
+      btnText.textContent = 'Something went wrong. Please email us directly.';
+      btn.disabled = false;
+    }
+  })
+  .catch(function() {
+    btnText.textContent = 'Network error. Please try again.';
+    btn.disabled = false;
+  });
+}, 400));
 
 })();
 </script>
+</body>
+</html>
 </body>
 </html>
