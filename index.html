@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>eban photos — Where Light Becomes Legacy</title>
+
+<!-- ═══════════════════════════════════════════════════════════
+     [SEC-1] SECURITY HEADERS (via meta tags)
+     NOTE: For full coverage, also set these as HTTP response
+     headers in your server (Express/Nginx/Apache):
+       Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+       Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(self "https://js.paystack.co")
+       Cross-Origin-Opener-Policy: same-origin
+       Cross-Origin-Resource-Policy: same-origin
+     ═══════════════════════════════════════════════════════════ -->
+
 <!-- [SEC-1a] Prevent MIME-type sniffing -->
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
@@ -12,6 +23,22 @@
 
 <!-- [SEC-1c] Referrer policy — don't leak full URL in referrer -->
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
+<!-- [SEC-1d] Content Security Policy
+     Directives explained:
+     default-src     — fallback for unspecified directives
+     script-src      — JS: only self + Paystack CDN (unsafe-inline required for inline
+                       script block; replace with server nonce in production)
+     style-src       — CSS: self + Google Fonts (unsafe-inline for inline <style>)
+     font-src        — only gstatic CDN for Fonts
+     img-src         — self + Unsplash + data URIs
+     connect-src     — XHR/fetch: self + Formspree + Paystack API
+     frame-src       — only Paystack checkout iframe
+     object-src      — block plugins (Flash etc.)
+     base-uri        — prevent base tag hijacking
+     form-action     — only submit to self and Formspree
+     upgrade-insecure-requests — force HTTPS for all subresource requests
+-->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src  'self' 'unsafe-inline' https://js.paystack.co;
@@ -32,6 +59,15 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+<!-- [SEC-2] SUBRESOURCE INTEGRITY (SRI)
+     crossorigin="anonymous" required for SRI checks on cross-origin resources.
+     NOTE: Paystack updates their inline.js periodically. Compute the hash with:
+       openssl dgst -sha384 -binary inline.js | openssl base64 -A
+     Then replace the placeholder integrity value below with the real hash.
+     Until then, the crossorigin attribute still enforces CORS rules.
+     To verify: curl -s https://js.paystack.co/v1/inline.js | openssl dgst -sha384 -binary | openssl base64 -A
+-->
 <script
   src="https://js.paystack.co/v1/inline.js"
   crossorigin="anonymous"
@@ -802,7 +838,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
     <div class="album-card reveal reveal-d1" data-album="portraiture" tabindex="0" role="button" aria-label="Open Portraiture album">
       <div class="album-img-wrap">
         <!-- [SEC-5] crossorigin for CORS image requests -->
-        <img class="album-cover" src="images/josphine.jpg" alt="Portraiture" crossorigin="anonymous" loading="lazy">
+        <img class="album-cover" src="images/fel.jpg" alt="Portraiture" crossorigin="anonymous" loading="lazy">
         <div class="album-layer"></div>
       </div>
       <div class="album-info">
@@ -815,7 +851,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
 
     <div class="album-card reveal reveal-d2" data-album="editorial" tabindex="0" role="button" aria-label="Open Editorial album">
       <div class="album-img-wrap">
-        <img class="album-cover" src="images/dadzie.jpgjpg" alt="Editorial" crossorigin="anonymous" loading="lazy">
+        <img class="album-cover" src="images/photo_2026-04-03_14-54-04.jpg" alt="Editorial" crossorigin="anonymous" loading="lazy">
         <div class="album-layer"></div>
       </div>
       <div class="album-info">
@@ -828,7 +864,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
 
     <div class="album-card reveal reveal-d3" data-album="ceremony" tabindex="0" role="button" aria-label="Open Ceremony album">
       <div class="album-img-wrap">
-        <img class="album-cover" src="imags/fel.jpg" alt="Ceremony" crossorigin="anonymous" loading="lazy">
+        <img class="album-cover" src="images/img2.jpg" alt="Ceremony" crossorigin="anonymous" loading="lazy">
         <div class="album-layer"></div>
       </div>
       <div class="album-info">
@@ -841,7 +877,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
 
     <div class="album-card premium-card reveal reveal-d4" id="premium-card" tabindex="0" role="button" aria-label="Unlock Premium Collection">
       <div class="album-img-wrap" id="premium-img-wrap" style="cursor:pointer;">
-        <img class="album-cover" src="images/yeboah.jpg.jpg" alt="The Intimate Archive" crossorigin="anonymous" loading="lazy" style="aspect-ratio:unset;height:100%;min-height:380px;">
+        <img class="images/you.jpg" crossorigin="anonymous" loading="lazy" style="aspect-ratio:unset;height:100%;min-height:380px;">
         <div class="album-layer"></div>
         <div class="premium-lock-veil" id="premium-lock-veil">
           <div class="lock-ring">
@@ -866,10 +902,10 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
           <span>Unlock Collection</span>
         </button>
         <div class="premium-blurred-previews">
-          <img class="blurred-thumb" src="images/dadzie.jpg.jpg" alt="" crossorigin="anonymous" loading="lazy">
-          <img class="blurred-thumb" src="images/fel.jpg" alt="" crossorigin="anonymous" loading="lazy">
-          <img class="blurred-thumb" src="images/dad.jpg" alt="" crossorigin="anonymous" loading="lazy">
-          <div class="blurred-more">...</div>
+          <img class="blurred-thumb" src="https://images.unsplash.com/photo-1554080353-a576cf803bda?w=100&q=60" alt="" crossorigin="anonymous" loading="lazy">
+          <img class="blurred-thumb" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=60" alt="" crossorigin="anonymous" loading="lazy">
+          <img class="blurred-thumb" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&q=60" alt="" crossorigin="anonymous" loading="lazy">
+          <div class="blurred-more">+12</div>
         </div>
         <div class="premium-perks">
           <div class="perk"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>15 exclusive high-resolution frames</div>
@@ -938,7 +974,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
             <div class="pm-check"><svg viewBox="0 0 12 10"><polyline points="1 5 4 9 11 1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             <div class="pm-icon momo"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18" stroke-linecap="round" stroke-width="2"/></svg></div>
             <span class="pm-name">Mobile Money</span>
-            <span class="pm-desc">MTN, Telecel, AirtelTigo</span>
+            <span class="pm-desc">MTN, Vodafone, AirtelTigo</span>
           </div>
         </label>
         <label class="pm-option">
@@ -1030,7 +1066,7 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
     <p class="sub reveal">Complete the form below and expect a personal response within 24 hours. Every collaboration begins with a conversation.</p>
     <!-- [SEC-9] novalidate keeps custom validation; action uses HTTPS Formspree endpoint -->
     <form class="book-form" id="booking-form"
-      action="https://formspree.io/f/xvzdorgg"
+      action="https://formspree.io/f/mwvwwbdk"
       method="POST"
       novalidate
       autocomplete="on">
@@ -1232,6 +1268,13 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
 <script>
 (function() {
 'use strict';
+
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-4] CSRF TOKEN GENERATION
+   Generates a cryptographically random token per page load.
+   In production your Express server should inject this token
+   via server-side rendering and validate it on every POST.
+   ═══════════════════════════════════════════════════════════════ */
 (function initCSRF() {
   var token;
   try {
@@ -1262,6 +1305,12 @@ footer ul a:hover { opacity: 1; color: var(--gold); }
   if (t1) t1.value = token;
   if (t2) t2.value = token;
 })();
+
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-3] ENHANCED SANITIZATION & INPUT VALIDATION
+   Escapes all 6 HTML metacharacters + blocks dangerous protocols.
+   Used for ALL user-derived content inserted into the DOM.
+   ═══════════════════════════════════════════════════════════════ */
 function sanitize(str) {
   if (str === null || str === undefined) return '';
   /* [SEC-3a] Convert to string and escape all HTML metacharacters */
@@ -1326,6 +1375,12 @@ var VALIDATORS = {
     return ['portrait','editorial','ceremony','lifestyle','other'].indexOf(v) !== -1;
   }
 };
+
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-8] ENHANCED RATE LIMITER
+   Tracks attempts per action key with exponential back-off.
+   Uses memory (not localStorage) to prevent client tampering.
+   ═══════════════════════════════════════════════════════════════ */
 var RateLimiter = (function() {
   var store = {};
   return {
@@ -1348,6 +1403,11 @@ var RateLimiter = (function() {
     }
   };
 })();
+
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-9] ENFORCE MIN DATE on booking date picker
+   Prevents users from selecting past dates.
+   ═══════════════════════════════════════════════════════════════ */
 (function() {
   var dateInp = document.getElementById('bf-date-inp');
   if (dateInp) {
@@ -1361,6 +1421,12 @@ var RateLimiter = (function() {
 
 /* Premium access flag — only ever set to true by server verification */
 var premiumUnlocked = false;
+
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-6] SESSION TOKEN VERIFICATION
+   Validates any stored JWT with the server before granting UI access.
+   Token format is validated client-side first to prevent SSRF.
+   ═══════════════════════════════════════════════════════════════ */
 (function verifyStoredSession() {
   var token;
   try { token = localStorage.getItem('eban_access_token'); } catch(e) { return; }
@@ -1461,14 +1527,12 @@ var ALBUMS = {
   ceremony: {
     name: 'Ceremony & Event',
     images: [
-      { src: 'images/you.jpg', caption: 'A Moment Of Worship' },
-      { src: 'images/img1.jpg', caption: 'Golden Vows' },
-      { src: 'images/img.jpg', caption: 'Candid Joy' },
-      { src: 'images/img2.jpg', caption: 'Faith' },
-      { src: 'images/photo_2026-04-03_4-54-04.jpg', caption: 'Fashion' },
-      { src: 'images/dadzie.jpg.jpg', caption: 'Humbleness' }
-      { src: 'images/yeboah.jpg.jpg', caption: 'Self' }
-      { src: 'images/josphine.jpg', caption: 'Smile' }
+      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=85', caption: 'Ceremony I' },
+      { src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1200&q=85', caption: 'Golden Vows' },
+      { src: 'https://images.unsplash.com/photo-1519404851957-4c27fdc24c5b?w=1200&q=85', caption: 'Candid Joy' },
+      { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=85', caption: 'Celebration' },
+      { src: 'https://images.unsplash.com/photo-1502720705749-871143f0e671?w=1200&q=85', caption: 'Reception' },
+      { src: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=1200&q=85', caption: 'Details' }
     ]
   },
   premium: {
@@ -1490,6 +1554,12 @@ var ALBUMS = {
   }
 };
 
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-6] PAYSTACK CONFIG
+   ONLY the PUBLIC key lives in frontend code.
+   The SECRET key must ONLY exist in server.js / environment variables.
+   Amount and currency are validated server-side after every payment.
+   ═══════════════════════════════════════════════════════════════ */
 var PS_KEY      = 'pk_live_b11c21ce75a9bb21ed3e05d2337c8bc40a093794';
 var PS_AMOUNT   = 15 * 100;  /* pesewas — server must independently verify this */
 var PS_CURRENCY = 'GHS';
@@ -1834,6 +1904,12 @@ document.getElementById('pay-btn').addEventListener('click', debounce(function()
   });
   handler.openIframe();
 }, 300));
+
+/* ═══════════════════════════════════════════════════════════════
+   [SEC-6] SERVER-SIDE PAYMENT VERIFICATION
+   The frontend NEVER trusts its own payment state.
+   Always verifies with the server before granting access.
+   ═══════════════════════════════════════════════════════════════ */
 function verifyPaymentServerSide(reference, fullName, csrfToken) {
   /* [SEC-3] Validate reference format before sending to server (prevents SSRF) */
   if (!/^[a-zA-Z0-9_\-]{8,128}$/.test(reference)) { showPaymentError(); return; }
@@ -2081,19 +2157,6 @@ bookForm.addEventListener('submit', debounce(function(e) {
 }, 400));
 
 })();
-const reveals = document.querySelectorAll('.reveal');
-
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-    }
-  });
-}, {
-  threshold: 0.1
-});
 </script>
-</body>
-</html>
 </body>
 </html>
